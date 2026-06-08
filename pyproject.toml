@@ -1,0 +1,34 @@
+[project]
+name = "pdfqa-rag"
+version = "0.1.0"
+description = "Professional RAG pipeline for the pdfQA benchmark dataset"
+requires-python = ">=3.13"
+dependencies = [
+    "ravi",
+    "pydantic-settings>=2.3",
+    "click>=8.1",
+    "tqdm>=4.66",
+    "python-dotenv>=1.0",
+    "sentence-transformers>=5.5.1",
+]
+
+[tool.uv.sources]
+ravi = { path = "../ravi-engine", editable = true }
+
+[project.scripts]
+pdfqa-rag = "pdfqa_rag.__main__:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

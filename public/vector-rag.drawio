@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="PVb3lT4Iq-w_-FQ3JckM">
+    <mxGraphModel dx="2685" dy="657" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Yydi2iqVUMVXiLBsqoT_-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="355" width="1880" x="-590" y="445" as="geometry" />
+        </mxCell>
+        <mxCell id="SNCtr0DtyBkQsuqz1E83-1" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.documents;" value="" vertex="1">
+          <mxGeometry height="141" width="115.69" x="-409" y="498" as="geometry" />
+        </mxCell>
+        <mxCell id="SNCtr0DtyBkQsuqz1E83-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Documents" vertex="1">
+          <mxGeometry height="46" width="144" x="-426" y="662" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
