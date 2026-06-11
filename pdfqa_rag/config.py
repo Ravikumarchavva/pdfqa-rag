@@ -65,7 +65,7 @@ class StoreConfig(BaseSettings):
     backend: str = "pgvector"
 
     database_url: str = Field(
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/agentdb",
+        "postgresql+asyncpg://postgres:postgres@localhost:5435/pdfqa",
         alias="DATABASE_URL",
     )
 

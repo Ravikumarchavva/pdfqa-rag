@@ -45,7 +45,7 @@ def _build_pgvector(cfg: StoreConfig, dimensions: int):
     )
     engine = create_async_engine(cfg.database_url, pool_pre_ping=True)
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
-    return PgVectorStore(session_factory=session_factory, dimensions=dimensions)
+    return PgVectorStore(session_factory=session_factory, engine=engine, dimensions=dimensions)
 
 
 def _redact_url(url: str) -> str:

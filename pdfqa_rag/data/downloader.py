@@ -25,8 +25,10 @@ import asyncio
 import logging
 from pathlib import Path
 from typing import Literal
-from pdfqa_rag.config import settings
+
 from ravi.kernel.vector import Document
+
+from pdfqa_rag.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -83,8 +85,8 @@ class DocumentDownloader:
             List of ``Document`` objects ready for embedding.
         """
         local_path = await self._ensure_cached(file_name, dataset)
-        return self._parse(local_path, file_name=file_name, dataset=dataset,
-                           chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        return await self._parse(local_path, file_name=file_name, dataset=dataset,
+                                 chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 
     async def load_many(
         self,
@@ -162,7 +164,7 @@ class DocumentDownloader:
             token=self._hf_token,
         )
 
-    def _parse(
+    async def _parse(
         self,
         path: Path,
         *,
@@ -175,7 +177,7 @@ class DocumentDownloader:
             return self._parse_text(path, file_name=file_name, dataset=dataset,
                                     chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         else:
-            return self._parse_pdf(path, file_name=file_name, dataset=dataset)
+            return await self._parse_pdf(path, file_name=file_name, dataset=dataset)
 
     def _parse_text(
         self,
@@ -203,11 +205,10 @@ class DocumentDownloader:
         )
         return docs
 
-    def _parse_pdf(
+    async def _parse_pdf(
         self, path: Path, *, file_name: str, dataset: str
     ) -> list[Document]:
-        """Parse a PDF with pdfplumber — one Document per page."""
-        import asyncio as _asyncio
+        """Parse a PDF with PDFLoader — one Document per page."""
         from ravi.capabilities.knowledge.loaders.pdf_loader import PDFLoader
 
         loader = PDFLoader(extract_tables=True)
@@ -217,6 +218,6 @@ class DocumentDownloader:
             "source_format": "pdf",
             "source_path": str(path),
         }
-        docs = _asyncio.run(loader.load(path, metadata=base_meta))
+        docs = await loader.load(path, metadata=base_meta)
         logger.info("Parsed %s → %d pages", path.name, len(docs))
         return docs
