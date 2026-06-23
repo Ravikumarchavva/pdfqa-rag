@@ -16,7 +16,7 @@ import hashlib
 import uuid
 from typing import Any
 
-from ravi.kernel.vector import Document
+from agent_substratekernel.vector import Document
 
 
 def _chunk_id(source: str, index: int, text: str) -> str:

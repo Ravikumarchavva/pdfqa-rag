@@ -158,7 +158,7 @@ async def _ingest_docs(
 
     # Build SourceChunk-like objects so BatchIngestor can handle resumption.
     # We use the Document objects directly via pipeline.ingest_documents instead.
-    from ravi.kernel.vector import Document as KernelDocument
+    from agent_substratekernel.vector import Document as KernelDocument
     n = await pipeline.ingest_documents(all_documents, collection=collection)
 
     click.echo(f"\nDone. {n} chunks ingested into collection '{collection}'.")

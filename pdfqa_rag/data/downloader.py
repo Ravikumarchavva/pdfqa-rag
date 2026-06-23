@@ -26,7 +26,7 @@ import logging
 from pathlib import Path
 from typing import Literal
 
-from ravi.kernel.vector import Document
+from agent_substratekernel.vector import Document
 
 from pdfqa_rag.config import settings
 
@@ -189,7 +189,7 @@ class DocumentDownloader:
         chunk_overlap: int,
     ) -> list[Document]:
         """Split a pre-extracted .txt file into fixed-size character chunks."""
-        from ravi.capabilities.knowledge.chunking import TextChunker
+        from agent_substratecapabilities.knowledge.chunking import TextChunker
 
         text = path.read_text(encoding="utf-8", errors="replace")
         chunker = TextChunker(chunk_size=chunk_size, overlap=chunk_overlap)
@@ -209,7 +209,7 @@ class DocumentDownloader:
         self, path: Path, *, file_name: str, dataset: str
     ) -> list[Document]:
         """Parse a PDF with PDFLoader — one Document per page."""
-        from ravi.capabilities.knowledge.loaders.pdf_loader import PDFLoader
+        from agent_substratecapabilities.knowledge.loaders.pdf_loader import PDFLoader
 
         loader = PDFLoader(extract_tables=True)
         base_meta = {

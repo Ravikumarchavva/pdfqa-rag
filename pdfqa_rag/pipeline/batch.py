@@ -26,7 +26,7 @@ from tqdm import tqdm
 from pdfqa_rag.data.models import SourceChunk
 
 if TYPE_CHECKING:
-    from ravi.capabilities.knowledge.pipeline import RAGPipeline
+    from agent_substratecapabilities.knowledge.pipeline import RAGPipeline
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +126,7 @@ class BatchIngestor:
 
         with tqdm(total=len(pending), unit="chunk", desc="Ingesting") as bar:
             async def _ingest_batch(batch: list[tuple[SourceChunk, str]]) -> int:
-                from ravi.kernel.vector import Document
+                from agent_substratekernel.vector import Document
 
                 async with sem:
                     documents = [

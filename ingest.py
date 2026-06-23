@@ -49,8 +49,8 @@ async def _run(
     import torch
     from tqdm import tqdm
 
-    from ravi.capabilities.llm import SentenceTransformersEmbeddingClient
-    from ravi.kernel.vector import Document
+    from agent_substratecapabilities.llm import SentenceTransformersEmbeddingClient
+    from agent_substratekernel.vector import Document
     from pdfqa_rag.config import AppConfig
     from pdfqa_rag.pipeline.parse import parse_pdf_worker
     from pdfqa_rag.store.factory import build_vector_store

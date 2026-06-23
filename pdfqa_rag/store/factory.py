@@ -2,7 +2,7 @@
 
 To add a new backend (e.g. ChromaDB, Qdrant):
 1. Add a new branch in ``build_vector_store``.
-2. Expose the same interface: ``VectorStore`` Protocol from ``ravi.kernel.vector``.
+2. Expose the same interface: ``VectorStore`` Protocol from ``agent_substratekernel.vector``.
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ def build_vector_store(cfg: StoreConfig, dimensions: int):
 
 
 def _build_pgvector(cfg: StoreConfig, dimensions: int):
-    from ravi.capabilities.vector.pgvector_store import PgVectorStore
+    from agent_substratecapabilities.vector.pgvector_store import PgVectorStore
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
     logger.debug(
