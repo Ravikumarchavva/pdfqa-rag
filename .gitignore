@@ -1,3 +1,9 @@
+# Large datasets — accidentally tracked as gitlinks (nested repos, not real
+# submodules — no .gitmodules ever existed for these), never committed as
+# actual blob content, but still shouldn't be tracked at all.
+/data/pdfQA-Benchmark/
+/data/pdfQA-Annotations/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
