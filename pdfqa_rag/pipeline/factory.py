@@ -1,9 +1,9 @@
 """RAGPipeline factory — thin wiring, no reimplementation.
 
 Delegates entirely to ravi-engine's existing factories:
-  - ``create_embedding_client()`` from agent_substrateintegrations.llm
-  - ``LLMFactory`` from agent_substrateintegrations.llm
-  - ``RAGPipeline`` from agent_substratecapabilities.knowledge.pipeline
+  - ``create_embedding_client()`` from substrate.integrations.llm
+  - ``LLMFactory`` from substrate.integrations.llm
+  - ``RAGPipeline`` from substrate.capabilities.knowledge.pipeline
   - ``PgVectorStore`` via store/factory.py
 
 All heavy imports are deferred to function bodies so ``import pdfqa_rag``
@@ -19,8 +19,8 @@ from pdfqa_rag.config import AppConfig, EmbedConfig, LLMConfig
 from pdfqa_rag.store.factory import build_vector_store
 
 if TYPE_CHECKING:
-    from agent_substratecapabilities.knowledge.pipeline import RAGPipeline
-    from agent_substratekernel.llm import EmbeddingClient, LLMClient
+    from substrate.capabilities.knowledge.pipeline import RAGPipeline
+    from substrate.kernel.llm import EmbeddingClient, LLMClient
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def build_embed_client(cfg: EmbedConfig) -> EmbeddingClient:
       ``<openai-model>``                →  OpenAI API
       ``<gemini-model>``                →  Gemini API
     """
-    from agent_substrateintegrations.llm import create_embedding_client
+    from substrate.integrations.llm import create_embedding_client
 
     logger.debug("Embed: model=%s base_url=%s", cfg.model, cfg.base_url or "(default)")
     return create_embedding_client(
@@ -45,7 +45,7 @@ def build_embed_client(cfg: EmbedConfig) -> EmbeddingClient:
 
 def build_llm_client(cfg: LLMConfig) -> LLMClient:
     """Build a generation client using ravi-engine's ``LLMFactory``."""
-    from agent_substrateintegrations.llm import LLMFactory
+    from substrate.integrations.llm import LLMFactory
 
     logger.debug("LLM: model=%s base_url=%s", cfg.model, cfg.base_url or "(openai)")
     return LLMFactory(cfg.model, cfg.api_key).build(
@@ -57,7 +57,7 @@ def build_llm_client(cfg: LLMConfig) -> LLMClient:
 
 async def build_pipeline(cfg: AppConfig) -> RAGPipeline:
     """Wire embed client + vector store into a ready-to-use RAGPipeline."""
-    from agent_substratecapabilities.knowledge.pipeline import RAGPipeline
+    from substrate.capabilities.knowledge.pipeline import RAGPipeline
 
     embed = build_embed_client(cfg.embed)
     store = build_vector_store(cfg.store, cfg.embed.dimensions)

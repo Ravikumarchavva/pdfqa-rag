@@ -72,6 +72,23 @@ class StoreConfig(BaseSettings):
     default_collection: str = "pdfqa"
 
 
+class BlobStoreConfig(BaseSettings):
+    """S3-compatible object store for raw source documents (PDFs/text).
+
+    Defaults match ``docker-compose.yml``'s SeaweedFS S3 gateway — run
+    ``make infra-up`` first. Swappable for AWS S3 / MinIO in production
+    with no code change, since access is purely via the S3 API.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="STORAGE_", extra="ignore")
+
+    endpoint_url: str = "http://localhost:8333"
+    access_key: str = "local"
+    secret_key: str = "local"
+    bucket: str = "pdfqa-raw"
+    region: str = "us-east-1"
+
+
 class PipelineConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="PIPELINE_", extra="ignore")
 
@@ -95,6 +112,7 @@ class AppConfig(BaseSettings):
     embed: EmbedConfig = Field(default_factory=EmbedConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     store: StoreConfig = Field(default_factory=StoreConfig)
+    storage: BlobStoreConfig = Field(default_factory=BlobStoreConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
     log_level: str = "INFO"
 

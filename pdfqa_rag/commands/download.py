@@ -94,13 +94,19 @@ async def _download(
     concurrency: int,
     hf_token: str | None,
 ) -> None:
+    from pdfqa_rag.config import AppConfig
     from pdfqa_rag.data.downloader import DocumentDownloader
     from pdfqa_rag.data.loader import load_annotations
+    from pdfqa_rag.storage.factory import build_blob_store
+
+    blob_store = build_blob_store(AppConfig().storage)
+    await blob_store.connect()
 
     downloader = DocumentDownloader(
         cache_dir=Path(cache_dir),
         format=fmt,
         hf_token=hf_token,
+        blob_store=blob_store,
     )
 
     if file_name:

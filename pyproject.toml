@@ -4,17 +4,14 @@ version = "0.1.0"
 description = "Professional RAG pipeline for the pdfQA benchmark dataset"
 requires-python = ">=3.13"
 dependencies = [
-    "ravi",
     "pydantic-settings>=2.3",
     "click>=8.1",
     "tqdm>=4.66",
     "python-dotenv>=1.0",
     "sentence-transformers>=5.5.1",
-    "docling>=2.99.0",
+    "agent-substrate[s3,rag]>=0.1.0",
+    "ipykernel>=7.3.0",
 ]
-
-[tool.uv.sources]
-ravi = { path = "../ravi-engine", editable = true }
 
 [project.scripts]
 pdfqa-rag = "pdfqa_rag.__main__:cli"

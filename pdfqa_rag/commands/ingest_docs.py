@@ -104,10 +104,13 @@ async def _ingest_docs(
     from pdfqa_rag.data.models import SourceChunk
     from pdfqa_rag.pipeline.batch import BatchIngestor
     from pdfqa_rag.pipeline.factory import build_pipeline
+    from pdfqa_rag.storage.factory import build_blob_store
 
     cfg = AppConfig()
     cache_path = Path(cache_dir)
-    downloader = DocumentDownloader(cache_dir=cache_path, format=fmt)
+    blob_store = build_blob_store(cfg.storage)
+    await blob_store.connect()
+    downloader = DocumentDownloader(cache_dir=cache_path, format=fmt, blob_store=blob_store)
 
     # Determine which files to ingest
     if file_name:
@@ -158,7 +161,7 @@ async def _ingest_docs(
 
     # Build SourceChunk-like objects so BatchIngestor can handle resumption.
     # We use the Document objects directly via pipeline.ingest_documents instead.
-    from agent_substratekernel.vector import Document as KernelDocument
+    from substrate.kernel.storage.vector import Document as KernelDocument
     n = await pipeline.ingest_documents(all_documents, collection=collection)
 
     click.echo(f"\nDone. {n} chunks ingested into collection '{collection}'.")

@@ -24,11 +24,14 @@ from __future__ import annotations
 import asyncio
 import logging
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-from agent_substratekernel.vector import Document
+from substrate.kernel.storage.vector import Document
 
 from pdfqa_rag.config import settings
+
+if TYPE_CHECKING:
+    from substrate.capabilities.storage.s3 import S3FileStore
 
 logger = logging.getLogger(__name__)
 
@@ -57,10 +60,15 @@ class DocumentDownloader:
         cache_dir: Path | str = settings.ROOT_DIR / 'data' / 'documents',
         format: Literal["text", "pdf"] = "text",
         hf_token: str | None = None,
+        blob_store: S3FileStore | None = None,
     ) -> None:
         self._cache_dir = Path(cache_dir)
         self._format = format
         self._hf_token = hf_token
+        # Durable copy of record. When set, HF downloads are persisted to
+        # SeaweedFS/S3 first; ``_cache_dir`` becomes an ephemeral local
+        # scratch copy for parsing, refillable from the blob store alone.
+        self._blob_store = blob_store
 
     # ── Public API ─────────────────────────────────────────────────────────────
 
@@ -136,23 +144,41 @@ class DocumentDownloader:
         template = _TXT_TEMPLATE if self._format == "text" else _PDF_TEMPLATE
         return template.format(dataset=dataset, file_name=file_name)
 
+    def _blob_key(self, file_name: str, dataset: str) -> str:
+        ext = "txt" if self._format == "text" else "pdf"
+        return f"{dataset}/{file_name}.{ext}"
+
     async def _ensure_cached(self, file_name: str, dataset: str) -> Path:
         local = self._local_path(file_name, dataset)
         if local.exists():
-            logger.debug("Cache hit: %s", local)
+            logger.debug("Cache hit (local): %s", local)
             return local
 
         local.parent.mkdir(parents=True, exist_ok=True)
+
+        if self._blob_store is not None:
+            key = self._blob_key(file_name, dataset)
+            if await self._blob_store.exists(key):
+                logger.debug("Cache hit (blob store): %s", key)
+                local.write_bytes(await self._blob_store.download(key))
+                return local
+
         hf_path = self._hf_path(file_name, dataset)
         logger.info("Downloading %s from HuggingFace ...", hf_path)
 
         # Run blocking download in a thread so we don't block the event loop
         downloaded = await asyncio.to_thread(self._hf_download, hf_path)
 
-        # Copy from HF cache to our structured cache dir
+        # Copy from HF cache to our structured local scratch dir
         import shutil
         shutil.copy2(downloaded, local)
         logger.info("Cached to %s (%d bytes)", local, local.stat().st_size)
+
+        if self._blob_store is not None:
+            key = self._blob_key(file_name, dataset)
+            await self._blob_store.upload(key, local.read_bytes())
+            logger.info("Persisted to blob store: %s", key)
+
         return local
 
     def _hf_download(self, hf_path: str) -> str:
@@ -189,7 +215,7 @@ class DocumentDownloader:
         chunk_overlap: int,
     ) -> list[Document]:
         """Split a pre-extracted .txt file into fixed-size character chunks."""
-        from agent_substratecapabilities.knowledge.chunking import TextChunker
+        from substrate.capabilities.knowledge.chunking import TextChunker
 
         text = path.read_text(encoding="utf-8", errors="replace")
         chunker = TextChunker(chunk_size=chunk_size, overlap=chunk_overlap)
@@ -209,7 +235,7 @@ class DocumentDownloader:
         self, path: Path, *, file_name: str, dataset: str
     ) -> list[Document]:
         """Parse a PDF with PDFLoader — one Document per page."""
-        from agent_substratecapabilities.knowledge.loaders.pdf_loader import PDFLoader
+        from substrate.capabilities.knowledge.loaders.pdf_loader import PDFLoader
 
         loader = PDFLoader(extract_tables=True)
         base_meta = {

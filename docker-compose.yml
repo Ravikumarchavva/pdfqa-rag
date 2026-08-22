@@ -17,5 +17,25 @@ services:
       start_period: 20s
     restart: unless-stopped
 
+  # S3-compatible object store for raw source documents (PDFs/text).
+  # agent-substrate's S3FileStore talks to any S3 API, so no code
+  # changes are needed to swap this for AWS S3 / MinIO in production.
+  seaweedfs:
+    image: chrislusf/seaweedfs
+    command: server -s3 -s3.port=8333 -dir=/data -master.volumeSizeLimitMB=1024
+    ports:
+      - "127.0.0.1:8333:8333"  # S3 API gateway
+      - "127.0.0.1:9333:9333"  # master UI / cluster status
+    volumes:
+      - seaweeddata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://127.0.0.1:9333/cluster/status || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  seaweeddata:
