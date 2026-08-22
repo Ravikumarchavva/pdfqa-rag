@@ -9,7 +9,7 @@ dependencies = [
     "tqdm>=4.66",
     "python-dotenv>=1.0",
     "sentence-transformers>=5.5.1",
-    "agent-substrate[s3,rag,extraction]>=0.2.0",
+    "agent-substrate[s3,rag]",
     "ipykernel>=7.3.0",
     # For running ExtractionPipeline directly in this venv (testing doc
     # extraction without the standalone HTTP service on :8021). GPU-only
@@ -35,6 +35,11 @@ explicit = true
 
 [tool.uv.sources]
 paddlepaddle-gpu = { index = "paddle-cu130" }
+# No real consumers of PyPI releases yet — pull agent-substrate straight
+# from the local checkout instead of publish-then-bump every iteration.
+# editable=true means `uv sync` doesn't need to re-run after every
+# agent-substrate change; only after a dependency-list/extras change there.
+agent-substrate = { path = "../agent-substrate", editable = true }
 
 [build-system]
 requires = ["hatchling"]

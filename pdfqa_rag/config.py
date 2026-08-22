@@ -69,6 +69,9 @@ class StoreConfig(BaseSettings):
         alias="DATABASE_URL",
     )
 
+    lancedb_path: str = "data/lancedb"
+    """Used only when backend == "lancedb" — see LanceDBVectorStore."""
+
     default_collection: str = "pdfqa"
 
 
@@ -102,6 +105,42 @@ class PipelineConfig(BaseSettings):
     categories: list[str] = Field(default_factory=lambda: ["real-pdfQA"])
 
 
+class DocumentIntelligenceConfig(BaseSettings):
+    """document-intelligence service (PaddleOCR extraction) — see
+    agent-substrate/src/substrate/runtimes/document_intelligence/client.py.
+
+    Defaults to localhost; point at a GPU host for larger batches, e.g.
+    ``DOC_INTEL_SERVICE_URL=http://192.168.0.11:8021``.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="DOC_INTEL_", extra="ignore")
+
+    service_url: str = "http://localhost:8021"
+    timeout_s: float = 90.0
+
+
+class MultimodalEmbedConfig(BaseSettings):
+    """llama-embed / llama-rerank sidecars (Qwen3-VL text+image embedding) —
+    see agent-substrate/src/substrate/runtimes/embedding_reranker/service/embedding.py.
+
+    Separate from ``EmbedConfig`` above: that one wraps ravi-engine's
+    generic text-only ``create_embedding_client`` (sentence-transformers/
+    OpenAI/Gemini); this targets the multimodal llama-server sidecars
+    specifically, which embed_text and embed_image into the same space.
+    Point at a GPU host for larger batches, e.g.
+    ``MM_EMBED_EMBED_SERVER_URL=http://192.168.0.11:8031``.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="MM_EMBED_", extra="ignore")
+
+    embed_server_url: str = "http://localhost:8031"
+    rerank_server_url: str = "http://localhost:8032"
+    timeout_s: float = 120.0
+    """Per-request httpx timeout. EmbeddingReranker's own default (30s) is
+    tuned for same-host calls; a remote GPU host (e.g. epyc over LAN) needs
+    more headroom for larger image payloads plus real inference time."""
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -114,6 +153,8 @@ class AppConfig(BaseSettings):
     store: StoreConfig = Field(default_factory=StoreConfig)
     storage: BlobStoreConfig = Field(default_factory=BlobStoreConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
+    doc_intel: DocumentIntelligenceConfig = Field(default_factory=DocumentIntelligenceConfig)
+    mm_embed: MultimodalEmbedConfig = Field(default_factory=MultimodalEmbedConfig)
     log_level: str = "INFO"
 
 class Settings(BaseSettings):
