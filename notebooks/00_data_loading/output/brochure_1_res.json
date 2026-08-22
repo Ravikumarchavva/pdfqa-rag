@@ -1,0 +1,1864 @@
+{
+    "input_path": "/home/ravikumar/Projects/agent-framework/pdfqa-rag/data/documents/PaperText/brochure.pdf",
+    "page_index": 1,
+    "page_count": 2,
+    "width": 1684,
+    "height": 1191,
+    "model_settings": {
+        "use_doc_preprocessor": false,
+        "use_layout_detection": true,
+        "use_chart_recognition": false,
+        "use_seal_recognition": false,
+        "use_ocr_for_image_block": false,
+        "format_block_content": false,
+        "merge_layout_blocks": true,
+        "markdown_ignore_labels": [
+            "number",
+            "footnote",
+            "header",
+            "header_image",
+            "footer",
+            "footer_image",
+            "aside_text"
+        ],
+        "return_layout_polygon_points": true
+    },
+    "parsing_res_list": [
+        {
+            "block_label": "paragraph_title",
+            "block_content": "What is PDF/UA?",
+            "block_bbox": [
+                30,
+                35,
+                224,
+                67
+            ],
+            "block_id": 0,
+            "block_order": 1,
+            "group_id": 0,
+            "block_polygon_points": [
+                [
+                    30.0,
+                    35.0
+                ],
+                [
+                    224.0,
+                    35.0
+                ],
+                [
+                    224.0,
+                    67.0
+                ],
+                [
+                    30.0,
+                    67.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF/UA is the common name for ISO 14289. An international standard approved in 2012, PDF/UA defines how to represent electronic documents in the PDF format in a manner that allows the file to be accessible. The standard identifies PDF components and properties relevant to this objective and provides requirements and restrictions on the form of their use.",
+            "block_bbox": [
+                29,
+                98,
+                531,
+                260
+            ],
+            "block_id": 1,
+            "block_order": 2,
+            "group_id": 1,
+            "block_polygon_points": [
+                [
+                    29.0,
+                    98.0
+                ],
+                [
+                    531.0,
+                    98.0
+                ],
+                [
+                    531.0,
+                    260.0
+                ],
+                [
+                    29.0,
+                    260.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF was not originally designed for accessibility; the focus was on providing accurate and reliable on-screen and printed results for page-based content. In 2000 the PDF specification was extended by a mechanism called \"tagging\" to make it possible to add structure and semantics to page content. PDF/UA defines the correct use of PDF tagging for maximum accessibility.",
+            "block_bbox": [
+                29,
+                287,
+                521,
+                476
+            ],
+            "block_id": 2,
+            "block_order": 3,
+            "group_id": 2,
+            "block_polygon_points": [
+                [
+                    29.0,
+                    287.0
+                ],
+                [
+                    521.0,
+                    287.0
+                ],
+                [
+                    521.0,
+                    476.0
+                ],
+                [
+                    29.0,
+                    476.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "In parallel with W3C's Web Content Accessibility Guidelines (WCAG 2.0) project, AllM and Adobe Systems started the PDF/UA Committee in 2004 to explore and develop specific technical requirements for accessible PDF. Following the ISO standardization of PDF in 2008, the working document was redrafted to use ISO 32000 and PDF/UA began development towards publication as an ISO standard. In 2010, PDF/UA was accepted as an ISO New Work Item. In 2012, PDF/UA publishes as ISO 14289.",
+            "block_bbox": [
+                28,
+                504,
+                525,
+                745
+            ],
+            "block_id": 3,
+            "block_order": 4,
+            "group_id": 3,
+            "block_polygon_points": [
+                [
+                    28.0,
+                    504.0
+                ],
+                [
+                    525.0,
+                    504.0
+                ],
+                [
+                    525.0,
+                    745.0
+                ],
+                [
+                    28.0,
+                    745.0
+                ]
+            ]
+        },
+        {
+            "block_label": "paragraph_title",
+            "block_content": "PDF/UA makes the world a better place",
+            "block_bbox": [
+                31,
+                766,
+                485,
+                799
+            ],
+            "block_id": 4,
+            "block_order": 5,
+            "group_id": 4,
+            "block_polygon_points": [
+                [
+                    31.0,
+                    766.0
+                ],
+                [
+                    485.0,
+                    766.0
+                ],
+                [
+                    485.0,
+                    799.0
+                ],
+                [
+                    31.0,
+                    799.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Increases likelihood that content provided in the PDF format is more accessible to more people than ever before",
+            "block_bbox": [
+                33,
+                828,
+                533,
+                878
+            ],
+            "block_id": 5,
+            "block_order": 6,
+            "group_id": 5,
+            "block_polygon_points": [
+                [
+                    33.0,
+                    828.0
+                ],
+                [
+                    533.0,
+                    828.0
+                ],
+                [
+                    533.0,
+                    878.0
+                ],
+                [
+                    33.0,
+                    878.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Establishes the technical requirements necessary to encourage development of accessible PDF creation and reading software",
+            "block_bbox": [
+                33,
+                884,
+                532,
+                933
+            ],
+            "block_id": 6,
+            "block_order": 7,
+            "group_id": 6,
+            "block_polygon_points": [
+                [
+                    33.0,
+                    884.0
+                ],
+                [
+                    532.0,
+                    884.0
+                ],
+                [
+                    532.0,
+                    933.0
+                ],
+                [
+                    33.0,
+                    933.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Provides an International Standard to guide software procurement and development",
+            "block_bbox": [
+                33,
+                937,
+                529,
+                986
+            ],
+            "block_id": 7,
+            "block_order": 8,
+            "group_id": 7,
+            "block_polygon_points": [
+                [
+                    33.0,
+                    937.0
+                ],
+                [
+                    529.0,
+                    937.0
+                ],
+                [
+                    529.0,
+                    986.0
+                ],
+                [
+                    33.0,
+                    986.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Provides a technically-specific road-map to conformance with WCAG 2.0 in PDF content",
+            "block_bbox": [
+                32,
+                991,
+                528,
+                1039
+            ],
+            "block_id": 8,
+            "block_order": 9,
+            "group_id": 8,
+            "block_polygon_points": [
+                [
+                    32.0,
+                    991.0
+                ],
+                [
+                    528.0,
+                    991.0
+                ],
+                [
+                    528.0,
+                    1039.0
+                ],
+                [
+                    32.0,
+                    1039.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Reduces liability exposure and minimizes legal uncertainty",
+            "block_bbox": [
+                32,
+                1044,
+                508,
+                1068
+            ],
+            "block_id": 9,
+            "block_order": 10,
+            "group_id": 9,
+            "block_polygon_points": [
+                [
+                    32.0,
+                    1044.0
+                ],
+                [
+                    508.0,
+                    1044.0
+                ],
+                [
+                    508.0,
+                    1068.0
+                ],
+                [
+                    32.0,
+                    1068.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Enables high quality, reliable reuse and re-purposing of PDFs",
+            "block_bbox": [
+                32,
+                1072,
+                521,
+                1095
+            ],
+            "block_id": 10,
+            "block_order": 11,
+            "group_id": 10,
+            "block_polygon_points": [
+                [
+                    32.0,
+                    1072.0
+                ],
+                [
+                    521.0,
+                    1072.0
+                ],
+                [
+                    521.0,
+                    1095.0
+                ],
+                [
+                    32.0,
+                    1095.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Implies eligibility for the “A” conformance level of PDF/A, the widely adopted ISO standard for PDF based archiving",
+            "block_bbox": [
+                32,
+                1098,
+                516,
+                1150
+            ],
+            "block_id": 11,
+            "block_order": 12,
+            "group_id": 11,
+            "block_polygon_points": [
+                [
+                    32.0,
+                    1098.0
+                ],
+                [
+                    516.0,
+                    1098.0
+                ],
+                [
+                    516.0,
+                    1150.0
+                ],
+                [
+                    32.0,
+                    1150.0
+                ]
+            ]
+        },
+        {
+            "block_label": "paragraph_title",
+            "block_content": "Why does the world need PDF/UA?",
+            "block_bbox": [
+                593,
+                34,
+                994,
+                69
+            ],
+            "block_id": 12,
+            "block_order": 13,
+            "group_id": 12,
+            "block_polygon_points": [
+                [
+                    593.0,
+                    34.0
+                ],
+                [
+                    994.0,
+                    34.0
+                ],
+                [
+                    994.0,
+                    69.0
+                ],
+                [
+                    593.0,
+                    69.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Tagged PDF first entered the market well over a decade ago.\nWhy do we need an ISO standard for this PDF feature?",
+            "block_bbox": [
+                592,
+                98,
+                1075,
+                151
+            ],
+            "block_id": 13,
+            "block_order": 14,
+            "group_id": 13,
+            "block_polygon_points": [
+                [
+                    592.0,
+                    98.0
+                ],
+                [
+                    1075.0,
+                    98.0
+                ],
+                [
+                    1075.0,
+                    151.0
+                ],
+                [
+                    592.0,
+                    151.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF is highly capable but internally complex. Regarding tagging and content reuse, the core PDF language includes significant ambiguities that have led to confusion and reduced interoperability. Market pressure for a reliable content accessibility and reuse mechanism for PDF content has been building for years, but key public-sector regulations to-date have tended to provide guidance in HTML and web-specific terms, leaving implementers without clear guidance on how to ensure the PDF files they create are made both reliable and accessible in the assistive technology context.",
+            "block_bbox": [
+                591,
+                179,
+                1084,
+                450
+            ],
+            "block_id": 14,
+            "block_order": 15,
+            "group_id": 14,
+            "block_polygon_points": [
+                [
+                    591.0,
+                    179.0
+                ],
+                [
+                    1084.0,
+                    179.0
+                ],
+                [
+                    1084.0,
+                    450.0
+                ],
+                [
+                    591.0,
+                    450.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "For these and other reasons high-quality tagged PDF has been\nslow to find broad acceptance. Today, over 70% of PDFs pro-\nduced on desktop computers are still completely untagged,\nwhile those PDFs that are tagged are frequently substandard.\nAs a consequence, most users who rely on tags in PDF to read\nhave learned to dislike PDF files for the unreliable, disjointed\nand grossly unsatisfactory experience they've so often received.",
+            "block_bbox": [
+                592,
+                477,
+                1093,
+                665
+            ],
+            "block_id": 15,
+            "block_order": 16,
+            "group_id": 15,
+            "block_polygon_points": [
+                [
+                    592.0,
+                    477.0
+                ],
+                [
+                    1093.0,
+                    477.0
+                ],
+                [
+                    1093.0,
+                    665.0
+                ],
+                [
+                    592.0,
+                    665.0
+                ]
+            ]
+        },
+        {
+            "block_label": "paragraph_title",
+            "block_content": "PDF/UA delivers enhanced communications to persons with disabilities",
+            "block_bbox": [
+                593,
+                684,
+                1095,
+                757
+            ],
+            "block_id": 16,
+            "block_order": 17,
+            "group_id": 16,
+            "block_polygon_points": [
+                [
+                    593.0,
+                    684.0
+                ],
+                [
+                    1095.0,
+                    684.0
+                ],
+                [
+                    1095.0,
+                    757.0
+                ],
+                [
+                    593.0,
+                    757.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF/UA will offer demonstrable high-quality results to end-users with disabilities using readily-available PDF/UA conforming (and near-conforming) readers and assistive technology.",
+            "block_bbox": [
+                592,
+                774,
+                1095,
+                855
+            ],
+            "block_id": 17,
+            "block_order": 18,
+            "group_id": 17,
+            "block_polygon_points": [
+                [
+                    592.0,
+                    774.0
+                ],
+                [
+                    1095.0,
+                    774.0
+                ],
+                [
+                    1095.0,
+                    855.0
+                ],
+                [
+                    592.0,
+                    855.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "It is to be expected that the PDF/UA standard will soon be referenced by equal access legislation and policies in Europe, North America and elsewhere, whether for government agencies, public procurement regulations or organizations in the private sector.",
+            "block_bbox": [
+                591,
+                882,
+                1088,
+                1016
+            ],
+            "block_id": 18,
+            "block_order": 19,
+            "group_id": 18,
+            "block_polygon_points": [
+                [
+                    591.0,
+                    882.0
+                ],
+                [
+                    1088.0,
+                    882.0
+                ],
+                [
+                    1088.0,
+                    1016.0
+                ],
+                [
+                    591.0,
+                    1016.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF/UA will quickly become an indispensable building block for any comprehensive organization-wide strategy to ensure documents and forms conform with applicable accessibility regulations, reducing liability exposure.",
+            "block_bbox": [
+                593,
+                1044,
+                1079,
+                1151
+            ],
+            "block_id": 19,
+            "block_order": 20,
+            "group_id": 19,
+            "block_polygon_points": [
+                [
+                    593.0,
+                    1044.0
+                ],
+                [
+                    1079.0,
+                    1044.0
+                ],
+                [
+                    1079.0,
+                    1151.0
+                ],
+                [
+                    593.0,
+                    1151.0
+                ]
+            ]
+        },
+        {
+            "block_label": "paragraph_title",
+            "block_content": "PDF/UA is a reality.\nWhat are you going to do about it?",
+            "block_bbox": [
+                1157,
+                34,
+                1567,
+                110
+            ],
+            "block_id": 20,
+            "block_order": 21,
+            "group_id": 20,
+            "block_polygon_points": [
+                [
+                    1157.0,
+                    34.0
+                ],
+                [
+                    1567.0,
+                    34.0
+                ],
+                [
+                    1567.0,
+                    110.0
+                ],
+                [
+                    1157.0,
+                    110.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF/UA is coming soon, and there's something for everyone:",
+            "block_bbox": [
+                1158,
+                124,
+                1642,
+                151
+            ],
+            "block_id": 21,
+            "block_order": 22,
+            "group_id": 21,
+            "block_polygon_points": [
+                [
+                    1158.0,
+                    124.0
+                ],
+                [
+                    1642.0,
+                    124.0
+                ],
+                [
+                    1642.0,
+                    151.0
+                ],
+                [
+                    1158.0,
+                    151.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Authoring software used to create PDF files, including OCR software, office programs and publishing tools",
+            "block_bbox": [
+                1160,
+                178,
+                1634,
+                232
+            ],
+            "block_id": 22,
+            "block_order": 23,
+            "group_id": 22,
+            "block_polygon_points": [
+                [
+                    1160.0,
+                    178.0
+                ],
+                [
+                    1634.0,
+                    178.0
+                ],
+                [
+                    1634.0,
+                    232.0
+                ],
+                [
+                    1160.0,
+                    232.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Editing software used to modify or tag existing PDF files",
+            "block_bbox": [
+                1160,
+                259,
+                1613,
+                286
+            ],
+            "block_id": 23,
+            "block_order": 24,
+            "group_id": 23,
+            "block_polygon_points": [
+                [
+                    1160.0,
+                    259.0
+                ],
+                [
+                    1613.0,
+                    259.0
+                ],
+                [
+                    1613.0,
+                    286.0
+                ],
+                [
+                    1160.0,
+                    286.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Reader software used to process a PDF file for use in a viewer or other consumer implementation",
+            "block_bbox": [
+                1161,
+                313,
+                1650,
+                367
+            ],
+            "block_id": 24,
+            "block_order": 25,
+            "group_id": 24,
+            "block_polygon_points": [
+                [
+                    1161.0,
+                    313.0
+                ],
+                [
+                    1650.0,
+                    313.0
+                ],
+                [
+                    1650.0,
+                    367.0
+                ],
+                [
+                    1161.0,
+                    367.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Assistive Technology software used interactively with PDF readers to provide access to users with disabilities",
+            "block_bbox": [
+                1161,
+                395,
+                1628,
+                448
+            ],
+            "block_id": 25,
+            "block_order": 26,
+            "group_id": 25,
+            "block_polygon_points": [
+                [
+                    1161.0,
+                    395.0
+                ],
+                [
+                    1628.0,
+                    395.0
+                ],
+                [
+                    1628.0,
+                    448.0
+                ],
+                [
+                    1161.0,
+                    448.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "PDF/UA may soon be a requirement – or a “suggestion” – for your organization or its customers. It’s time to know more.",
+            "block_bbox": [
+                1157,
+                477,
+                1636,
+                530
+            ],
+            "block_id": 26,
+            "block_order": 27,
+            "group_id": 26,
+            "block_polygon_points": [
+                [
+                    1157.0,
+                    477.0
+                ],
+                [
+                    1636.0,
+                    477.0
+                ],
+                [
+                    1636.0,
+                    530.0
+                ],
+                [
+                    1157.0,
+                    530.0
+                ]
+            ]
+        },
+        {
+            "block_label": "paragraph_title",
+            "block_content": "How can we help?",
+            "block_bbox": [
+                1159,
+                549,
+                1372,
+                584
+            ],
+            "block_id": 27,
+            "block_order": 28,
+            "group_id": 27,
+            "block_polygon_points": [
+                [
+                    1159.0,
+                    549.0
+                ],
+                [
+                    1372.0,
+                    549.0
+                ],
+                [
+                    1372.0,
+                    584.0
+                ],
+                [
+                    1159.0,
+                    584.0
+                ]
+            ]
+        },
+        {
+            "block_label": "text",
+            "block_content": "Members and non-members alike will always find the PDF Association website, www.pdfa.org, a good place to start. The organization has made available video recordings and slides of technical presentations regarding PDF/UA from the PDF Association's 2012 Technical Conference. Members of the PDF Association benefit from a network of renowned experts, extensive internal resources and active collaboration in the PDF/UA Competence Center.",
+            "block_bbox": [
+                1156,
+                612,
+                1653,
+                826
+            ],
+            "block_id": 28,
+            "block_order": 29,
+            "group_id": 28,
+            "block_polygon_points": [
+                [
+                    1156.0,
+                    612.0
+                ],
+                [
+                    1653.0,
+                    612.0
+                ],
+                [
+                    1653.0,
+                    826.0
+                ],
+                [
+                    1156.0,
+                    826.0
+                ]
+            ]
+        },
+        {
+            "block_label": "image",
+            "block_content": "",
+            "block_bbox": [
+                1162,
+                841,
+                1648,
+                1155
+            ],
+            "block_id": 29,
+            "block_order": null,
+            "group_id": 29,
+            "block_polygon_points": [
+                [
+                    1162.0,
+                    841.0
+                ],
+                [
+                    1648.0,
+                    841.0
+                ],
+                [
+                    1648.0,
+                    1155.0
+                ],
+                [
+                    1162.0,
+                    1155.0
+                ]
+            ]
+        }
+    ],
+    "layout_det_res": {
+        "input_path": null,
+        "page_index": null,
+        "boxes": [
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8664326667785645,
+                "coordinate": [
+                    30,
+                    35,
+                    224,
+                    67
+                ],
+                "order": 1,
+                "polygon_points": [
+                    [
+                        30.0,
+                        35.0
+                    ],
+                    [
+                        224.0,
+                        35.0
+                    ],
+                    [
+                        224.0,
+                        67.0
+                    ],
+                    [
+                        30.0,
+                        67.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9546753168106079,
+                "coordinate": [
+                    29,
+                    98,
+                    531,
+                    260
+                ],
+                "order": 2,
+                "polygon_points": [
+                    [
+                        29.0,
+                        98.0
+                    ],
+                    [
+                        531.0,
+                        98.0
+                    ],
+                    [
+                        531.0,
+                        260.0
+                    ],
+                    [
+                        29.0,
+                        260.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9587151408195496,
+                "coordinate": [
+                    29,
+                    287,
+                    521,
+                    476
+                ],
+                "order": 3,
+                "polygon_points": [
+                    [
+                        29.0,
+                        287.0
+                    ],
+                    [
+                        521.0,
+                        287.0
+                    ],
+                    [
+                        521.0,
+                        476.0
+                    ],
+                    [
+                        29.0,
+                        476.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9608364105224609,
+                "coordinate": [
+                    28,
+                    504,
+                    525,
+                    745
+                ],
+                "order": 4,
+                "polygon_points": [
+                    [
+                        28.0,
+                        504.0
+                    ],
+                    [
+                        525.0,
+                        504.0
+                    ],
+                    [
+                        525.0,
+                        745.0
+                    ],
+                    [
+                        28.0,
+                        745.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8753612637519836,
+                "coordinate": [
+                    31,
+                    766,
+                    485,
+                    799
+                ],
+                "order": 5,
+                "polygon_points": [
+                    [
+                        31.0,
+                        766.0
+                    ],
+                    [
+                        485.0,
+                        766.0
+                    ],
+                    [
+                        485.0,
+                        799.0
+                    ],
+                    [
+                        31.0,
+                        799.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9210824966430664,
+                "coordinate": [
+                    33,
+                    828,
+                    533,
+                    878
+                ],
+                "order": 6,
+                "polygon_points": [
+                    [
+                        33.0,
+                        828.0
+                    ],
+                    [
+                        533.0,
+                        828.0
+                    ],
+                    [
+                        533.0,
+                        878.0
+                    ],
+                    [
+                        33.0,
+                        878.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9173840284347534,
+                "coordinate": [
+                    33,
+                    884,
+                    532,
+                    933
+                ],
+                "order": 7,
+                "polygon_points": [
+                    [
+                        33.0,
+                        884.0
+                    ],
+                    [
+                        532.0,
+                        884.0
+                    ],
+                    [
+                        532.0,
+                        933.0
+                    ],
+                    [
+                        33.0,
+                        933.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9070063829421997,
+                "coordinate": [
+                    33,
+                    937,
+                    529,
+                    986
+                ],
+                "order": 8,
+                "polygon_points": [
+                    [
+                        33.0,
+                        937.0
+                    ],
+                    [
+                        529.0,
+                        937.0
+                    ],
+                    [
+                        529.0,
+                        986.0
+                    ],
+                    [
+                        33.0,
+                        986.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9077611565589905,
+                "coordinate": [
+                    32,
+                    991,
+                    528,
+                    1039
+                ],
+                "order": 9,
+                "polygon_points": [
+                    [
+                        32.0,
+                        991.0
+                    ],
+                    [
+                        528.0,
+                        991.0
+                    ],
+                    [
+                        528.0,
+                        1039.0
+                    ],
+                    [
+                        32.0,
+                        1039.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8573105335235596,
+                "coordinate": [
+                    32,
+                    1044,
+                    508,
+                    1068
+                ],
+                "order": 10,
+                "polygon_points": [
+                    [
+                        32.0,
+                        1044.0
+                    ],
+                    [
+                        508.0,
+                        1044.0
+                    ],
+                    [
+                        508.0,
+                        1068.0
+                    ],
+                    [
+                        32.0,
+                        1068.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8358955383300781,
+                "coordinate": [
+                    32,
+                    1072,
+                    521,
+                    1095
+                ],
+                "order": 11,
+                "polygon_points": [
+                    [
+                        32.0,
+                        1072.0
+                    ],
+                    [
+                        521.0,
+                        1072.0
+                    ],
+                    [
+                        521.0,
+                        1095.0
+                    ],
+                    [
+                        32.0,
+                        1095.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9046784043312073,
+                "coordinate": [
+                    32,
+                    1098,
+                    516,
+                    1150
+                ],
+                "order": 12,
+                "polygon_points": [
+                    [
+                        32.0,
+                        1098.0
+                    ],
+                    [
+                        516.0,
+                        1098.0
+                    ],
+                    [
+                        516.0,
+                        1150.0
+                    ],
+                    [
+                        32.0,
+                        1150.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8524665236473083,
+                "coordinate": [
+                    593,
+                    34,
+                    994,
+                    69
+                ],
+                "order": 13,
+                "polygon_points": [
+                    [
+                        593.0,
+                        34.0
+                    ],
+                    [
+                        994.0,
+                        34.0
+                    ],
+                    [
+                        994.0,
+                        69.0
+                    ],
+                    [
+                        593.0,
+                        69.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9163578152656555,
+                "coordinate": [
+                    592,
+                    98,
+                    1075,
+                    151
+                ],
+                "order": 14,
+                "polygon_points": [
+                    [
+                        592.0,
+                        98.0
+                    ],
+                    [
+                        1075.0,
+                        98.0
+                    ],
+                    [
+                        1075.0,
+                        151.0
+                    ],
+                    [
+                        592.0,
+                        151.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9595197439193726,
+                "coordinate": [
+                    591,
+                    179,
+                    1084,
+                    450
+                ],
+                "order": 15,
+                "polygon_points": [
+                    [
+                        591.0,
+                        179.0
+                    ],
+                    [
+                        1084.0,
+                        179.0
+                    ],
+                    [
+                        1084.0,
+                        450.0
+                    ],
+                    [
+                        591.0,
+                        450.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.95713210105896,
+                "coordinate": [
+                    592,
+                    477,
+                    1093,
+                    665
+                ],
+                "order": 16,
+                "polygon_points": [
+                    [
+                        592.0,
+                        477.0
+                    ],
+                    [
+                        1093.0,
+                        477.0
+                    ],
+                    [
+                        1093.0,
+                        665.0
+                    ],
+                    [
+                        592.0,
+                        665.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.9155216217041016,
+                "coordinate": [
+                    593,
+                    684,
+                    1095,
+                    757
+                ],
+                "order": 17,
+                "polygon_points": [
+                    [
+                        593.0,
+                        684.0
+                    ],
+                    [
+                        1095.0,
+                        684.0
+                    ],
+                    [
+                        1095.0,
+                        757.0
+                    ],
+                    [
+                        593.0,
+                        757.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9383395314216614,
+                "coordinate": [
+                    592,
+                    774,
+                    1095,
+                    855
+                ],
+                "order": 18,
+                "polygon_points": [
+                    [
+                        592.0,
+                        774.0
+                    ],
+                    [
+                        1095.0,
+                        774.0
+                    ],
+                    [
+                        1095.0,
+                        855.0
+                    ],
+                    [
+                        592.0,
+                        855.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9486508965492249,
+                "coordinate": [
+                    591,
+                    882,
+                    1088,
+                    1016
+                ],
+                "order": 19,
+                "polygon_points": [
+                    [
+                        591.0,
+                        882.0
+                    ],
+                    [
+                        1088.0,
+                        882.0
+                    ],
+                    [
+                        1088.0,
+                        1016.0
+                    ],
+                    [
+                        591.0,
+                        1016.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9513590931892395,
+                "coordinate": [
+                    593,
+                    1044,
+                    1079,
+                    1151
+                ],
+                "order": 20,
+                "polygon_points": [
+                    [
+                        593.0,
+                        1044.0
+                    ],
+                    [
+                        1079.0,
+                        1044.0
+                    ],
+                    [
+                        1079.0,
+                        1151.0
+                    ],
+                    [
+                        593.0,
+                        1151.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8736599087715149,
+                "coordinate": [
+                    1157,
+                    34,
+                    1567,
+                    110
+                ],
+                "order": 21,
+                "polygon_points": [
+                    [
+                        1157.0,
+                        34.0
+                    ],
+                    [
+                        1567.0,
+                        34.0
+                    ],
+                    [
+                        1567.0,
+                        110.0
+                    ],
+                    [
+                        1157.0,
+                        110.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8479532599449158,
+                "coordinate": [
+                    1158,
+                    124,
+                    1642,
+                    151
+                ],
+                "order": 22,
+                "polygon_points": [
+                    [
+                        1158.0,
+                        124.0
+                    ],
+                    [
+                        1642.0,
+                        124.0
+                    ],
+                    [
+                        1642.0,
+                        151.0
+                    ],
+                    [
+                        1158.0,
+                        151.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8967869877815247,
+                "coordinate": [
+                    1160,
+                    178,
+                    1634,
+                    232
+                ],
+                "order": 23,
+                "polygon_points": [
+                    [
+                        1160.0,
+                        178.0
+                    ],
+                    [
+                        1634.0,
+                        178.0
+                    ],
+                    [
+                        1634.0,
+                        232.0
+                    ],
+                    [
+                        1160.0,
+                        232.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8196191191673279,
+                "coordinate": [
+                    1160,
+                    259,
+                    1613,
+                    286
+                ],
+                "order": 24,
+                "polygon_points": [
+                    [
+                        1160.0,
+                        259.0
+                    ],
+                    [
+                        1613.0,
+                        259.0
+                    ],
+                    [
+                        1613.0,
+                        286.0
+                    ],
+                    [
+                        1160.0,
+                        286.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8822875022888184,
+                "coordinate": [
+                    1161,
+                    313,
+                    1650,
+                    367
+                ],
+                "order": 25,
+                "polygon_points": [
+                    [
+                        1161.0,
+                        313.0
+                    ],
+                    [
+                        1650.0,
+                        313.0
+                    ],
+                    [
+                        1650.0,
+                        367.0
+                    ],
+                    [
+                        1161.0,
+                        367.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.8992364406585693,
+                "coordinate": [
+                    1161,
+                    395,
+                    1628,
+                    448
+                ],
+                "order": 26,
+                "polygon_points": [
+                    [
+                        1161.0,
+                        395.0
+                    ],
+                    [
+                        1628.0,
+                        395.0
+                    ],
+                    [
+                        1628.0,
+                        448.0
+                    ],
+                    [
+                        1161.0,
+                        448.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9166799783706665,
+                "coordinate": [
+                    1157,
+                    477,
+                    1636,
+                    530
+                ],
+                "order": 27,
+                "polygon_points": [
+                    [
+                        1157.0,
+                        477.0
+                    ],
+                    [
+                        1636.0,
+                        477.0
+                    ],
+                    [
+                        1636.0,
+                        530.0
+                    ],
+                    [
+                        1157.0,
+                        530.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 17,
+                "label": "paragraph_title",
+                "score": 0.8621131181716919,
+                "coordinate": [
+                    1159,
+                    549,
+                    1372,
+                    584
+                ],
+                "order": 28,
+                "polygon_points": [
+                    [
+                        1159.0,
+                        549.0
+                    ],
+                    [
+                        1372.0,
+                        549.0
+                    ],
+                    [
+                        1372.0,
+                        584.0
+                    ],
+                    [
+                        1159.0,
+                        584.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 22,
+                "label": "text",
+                "score": 0.9575298428535461,
+                "coordinate": [
+                    1156,
+                    612,
+                    1653,
+                    826
+                ],
+                "order": 29,
+                "polygon_points": [
+                    [
+                        1156.0,
+                        612.0
+                    ],
+                    [
+                        1653.0,
+                        612.0
+                    ],
+                    [
+                        1653.0,
+                        826.0
+                    ],
+                    [
+                        1156.0,
+                        826.0
+                    ]
+                ]
+            },
+            {
+                "cls_id": 14,
+                "label": "image",
+                "score": 0.9650066494941711,
+                "coordinate": [
+                    1162,
+                    841,
+                    1648,
+                    1155
+                ],
+                "order": null,
+                "polygon_points": [
+                    [
+                        1162.0,
+                        841.0
+                    ],
+                    [
+                        1648.0,
+                        841.0
+                    ],
+                    [
+                        1648.0,
+                        1155.0
+                    ],
+                    [
+                        1162.0,
+                        1155.0
+                    ]
+                ]
+            }
+        ]
+    }
+}

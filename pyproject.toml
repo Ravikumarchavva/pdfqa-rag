@@ -2,19 +2,39 @@
 name = "pdfqa-rag"
 version = "0.1.0"
 description = "Professional RAG pipeline for the pdfQA benchmark dataset"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "pydantic-settings>=2.3",
     "click>=8.1",
     "tqdm>=4.66",
     "python-dotenv>=1.0",
     "sentence-transformers>=5.5.1",
-    "agent-substrate[s3,rag]>=0.1.0",
+    "agent-substrate[s3,rag,extraction]>=0.2.0",
     "ipykernel>=7.3.0",
+    # For running ExtractionPipeline directly in this venv (testing doc
+    # extraction without the standalone HTTP service on :8021). GPU-only
+    # wheel, so restricted to linux — paddlepaddle-gpu has no macOS build
+    # at all, and without this marker uv's platform-independent resolution
+    # fails outright trying to solve for darwin (see agent-substrate's own
+    # `doc-handler-gpu` extra comment for the same warning). Matched to
+    # agent-substrate's pinned version/index — see [tool.uv.sources] below.
+    "paddleocr[doc-parser]>=3.7.0",
+    "paddlepaddle-gpu==3.3.0; sys_platform == 'linux'",
+    "ipywidgets>=8.1.9",
+    "pypdf>=6.16.1",
+    "pdfplumber>=0.11.10",
 ]
 
 [project.scripts]
 pdfqa-rag = "pdfqa_rag.__main__:cli"
+
+[[tool.uv.index]]
+name = "paddle-cu130"
+url = "https://www.paddlepaddle.org.cn/packages/stable/cu130/"
+explicit = true
+
+[tool.uv.sources]
+paddlepaddle-gpu = { index = "paddle-cu130" }
 
 [build-system]
 requires = ["hatchling"]
@@ -22,7 +42,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
