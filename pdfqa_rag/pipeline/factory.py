@@ -107,7 +107,7 @@ def build_multimodal_embedder(cfg: MultimodalEmbedConfig) -> EmbeddingReranker:
 
 def build_blob_store(cfg: BlobStoreConfig) -> S3FileStore:
     """Build the SeaweedFS-backed blob store for source PDFs + extracted
-    images. Uses agent-substrate's own S3FileStore (wraps MinIOConnector,
+    images. Uses agent-substrate's own S3FileStore (wraps S3Connector,
     speaks the S3 API — compatible with SeaweedFS's S3 gateway)."""
     from substrate.capabilities.storage.s3 import S3FileStore
 
@@ -122,16 +122,23 @@ def build_blob_store(cfg: BlobStoreConfig) -> S3FileStore:
 
 
 def build_document_ingest_pipeline(
-    cfg: AppConfig, store, blob_store: S3FileStore
+    cfg: AppConfig, store, blob_store: S3FileStore | None = None
 ) -> DocumentIngestPipeline:
-    """Wire extraction client + multimodal embedder + store + blob store into
-    a ready-to-use ``DocumentIngestPipeline`` (see
+    """Wire extraction client + multimodal embedder + store (+ optional blob
+    store) into a ready-to-use ``DocumentIngestPipeline`` (see
     substrate.capabilities.knowledge) — pass in the store yourself (e.g.
     from ``build_vector_store``) since its dimensions depend on the
-    embedding model, which this function has no opinion about.
+    embedding model, which this function has no opinion about. Omit
+    ``blob_store`` to inline extracted images instead of uploading them.
     """
     from substrate.capabilities.knowledge import DocumentIngestPipeline
 
     extraction = build_extraction_client(cfg.doc_intel)
     embedder = build_multimodal_embedder(cfg.mm_embed)
-    return DocumentIngestPipeline(extraction, embedder, store, blob_store)
+    return DocumentIngestPipeline(
+        extraction,
+        embedder,
+        store,
+        blob_store=blob_store,
+        key_prefix=cfg.storage.key_prefix,
+    )

@@ -74,13 +74,31 @@ class StoreConfig(BaseSettings):
 
     default_collection: str = "pdfqa"
 
+    require_ssl: bool = False
+    """Set true for hosted Postgres that requires TLS (e.g. Neon). SQLAlchemy's
+    asyncpg dialect does NOT accept psycopg's ``?sslmode=`` query param (it
+    passes URL query params straight through as asyncpg.connect() kwargs,
+    which has no `sslmode` parameter at all -- only `ssl`) -- see
+    store/factory.py::_build_pgvector for the explicit connect_args this
+    triggers instead. NOT verified against a real Neon URL; validate before
+    relying on it in production."""
+
+    pool_size: int = 16
+    max_overflow: int = 4
+    """Sized for the staged ingestion driver's 8 concurrent stage-2 workers,
+    each opening its own engine.begin() -- see pipeline/dataset_ingest_gpu.py."""
+
 
 class BlobStoreConfig(BaseSettings):
     """S3-compatible object store for raw source documents (PDFs/text).
 
     Defaults match ``docker-compose.yml``'s SeaweedFS S3 gateway — run
-    ``make infra-up`` first. Swappable for AWS S3 / MinIO in production
-    with no code change, since access is purely via the S3 API.
+    ``make infra-up`` first. Swappable for AWS S3 (or any S3-compatible service) in production
+    with no code change, since access is purely via the S3 API: leave
+    ``endpoint_url``/``access_key``/``secret_key`` empty to talk to real AWS
+    S3 with the standard credential chain (env vars / ``~/.aws`` / IAM role)
+    — see ``infrastructure/storage/s3.py::S3Connector`` for why empty
+    string, not just any falsy value, is what triggers that fallback.
     """
 
     model_config = SettingsConfigDict(env_prefix="STORAGE_", extra="ignore")
@@ -90,6 +108,11 @@ class BlobStoreConfig(BaseSettings):
     secret_key: str = "local"
     bucket: str = "pdfqa-raw"
     region: str = "us-east-1"
+
+    key_prefix: str = ""
+    """Prepended to every object key DocumentIngestPipeline writes — see
+    its own ``key_prefix`` constructor arg. Deployment policy (namespace
+    layout), independent of *where* the objects are stored."""
 
 
 class PipelineConfig(BaseSettings):

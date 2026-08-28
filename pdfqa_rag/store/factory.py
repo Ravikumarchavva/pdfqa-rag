@@ -62,17 +62,40 @@ def _build_lancedb(cfg: StoreConfig):
 
 
 def _build_pgvector(cfg: StoreConfig, dimensions: int):
-    from substrate.capabilities.vector.pgvector_store import PgVectorStore
     from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+    from substrate.capabilities.vector.pgvector_store import PgVectorStore
 
     logger.debug(
         "Building PgVectorStore (dims=%d) against %s",
         dimensions,
         _redact_url(cfg.database_url),
     )
-    engine = create_async_engine(cfg.database_url, pool_pre_ping=True)
+    connect_args = _ssl_connect_args() if cfg.require_ssl else {}
+    engine = create_async_engine(
+        cfg.database_url,
+        pool_pre_ping=True,
+        pool_size=cfg.pool_size,
+        max_overflow=cfg.max_overflow,
+        connect_args=connect_args,
+    )
     session_factory = async_sessionmaker(engine, expire_on_commit=False)
     return PgVectorStore(session_factory=session_factory, engine=engine, dimensions=dimensions)
+
+
+def _ssl_connect_args() -> dict:
+    """asyncpg's own ``connect()`` has no ``sslmode`` parameter (only
+    ``ssl``) — SQLAlchemy's asyncpg dialect passes a URL's query params
+    straight through as ``connect()`` kwargs with no translation, so a
+    Postgres URL carrying psycopg's conventional ``?sslmode=require`` would
+    fail with ``TypeError: unexpected keyword argument 'sslmode'`` rather
+    than actually enabling TLS. Passing a real ``ssl.SSLContext`` via
+    ``connect_args`` instead sidesteps that whole ambiguity — this is what
+    ``StoreConfig.require_ssl=True`` triggers. A hosted-Postgres URL should
+    NOT itself carry ``?sslmode=`` when this is used.
+    """
+    import ssl
+
+    return {"ssl": ssl.create_default_context()}
 
 
 def _redact_url(url: str) -> str:
