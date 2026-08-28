@@ -626,8 +626,30 @@ def _default_endpoints(cfg: AppConfig) -> list[str]:
     return urls
 
 
+def _unmute_substrate_logging() -> None:
+    """Let agent-substrate's own warnings reach this driver's stdout.
+
+    Real, found-not-assumed, and it hid actual data loss: substrate's
+    ``setup_logging`` installs a handler on the ``substrate`` namespace and
+    sets ``propagate = False`` (src/substrate/logger.py), so every
+    ``logger.warning`` inside DocumentIngestPipeline -- including the
+    "Skipping image ..." / "Skipping chunk ..." lines that are the ONLY
+    record of a dropped row -- was swallowed before reaching the handler
+    ``logging.basicConfig`` installs here. A run that silently discarded 13
+    of 60 images looked identical to a clean one, because the run summary
+    reports only what survived.
+
+    Verified with a canary warning: swallowed before this, visible after.
+    """
+    substrate_logger = logging.getLogger("substrate")
+    substrate_logger.handlers.clear()
+    substrate_logger.propagate = True
+    substrate_logger.setLevel(logging.INFO)
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    _unmute_substrate_logging()
     parser = argparse.ArgumentParser(description="GPU-parallel checkpointed PDF ingestion")
     parser.add_argument(
         "--dataset",
