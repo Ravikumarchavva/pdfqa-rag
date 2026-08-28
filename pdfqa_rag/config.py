@@ -128,6 +128,37 @@ class PipelineConfig(BaseSettings):
     categories: list[str] = Field(default_factory=lambda: ["real-pdfQA"])
 
 
+class ChunkingConfig(BaseSettings):
+    """How extracted markdown is split before embedding — see
+    agent-substrate/src/substrate/capabilities/knowledge/chunking.py.
+
+    These are the A/B knobs for retrieval-quality runs: ingest the same
+    corpus into differently-named collections with different values here,
+    then compare with ``pdfqa-rag eval --collection <name>``.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="CHUNK_", extra="ignore")
+
+    size: int = 1800
+    """Target chunk size in CHARACTERS, not tokens. ~1800 chars is roughly
+    450 tokens, well inside llama-embed-gpu's real per-slot ceiling of 1024
+    (``--ctx-size 8192 --parallel 8``). Raising this past ~4000 chars
+    silently truncates at the embedding server, so raise --ctx-size in
+    lockstep if you go there."""
+
+    overlap: int = 250
+
+    segmenter: str = "regex"
+    """``"regex"`` (default, no dependencies) or ``"sat"`` (model-based,
+    needs agent-substrate's ``chunking`` extra). SaT finds boundaries in
+    unpunctuated OCR text — headings, bullet lists, column-broken lines —
+    where the regex returns the whole block as one unsplittable unit."""
+
+    sat_model: str = "sat-3l-sm"
+    """Only used when segmenter == "sat". Upstream's recommended
+    speed/accuracy balance."""
+
+
 class DocumentIntelligenceConfig(BaseSettings):
     """document-intelligence service (PaddleOCR extraction) — see
     agent-substrate/src/substrate/runtimes/document_intelligence/client.py.
@@ -181,11 +212,14 @@ class AppConfig(BaseSettings):
     store: StoreConfig = Field(default_factory=StoreConfig)
     storage: BlobStoreConfig = Field(default_factory=BlobStoreConfig)
     pipeline: PipelineConfig = Field(default_factory=PipelineConfig)
+    chunking: ChunkingConfig = Field(default_factory=ChunkingConfig)
     doc_intel: DocumentIntelligenceConfig = Field(default_factory=DocumentIntelligenceConfig)
     mm_embed: MultimodalEmbedConfig = Field(default_factory=MultimodalEmbedConfig)
     log_level: str = "INFO"
 
+
 class Settings(BaseSettings):
     ROOT_DIR: ClassVar[Path] = Path(__file__).parent.parent
+
 
 settings = Settings()

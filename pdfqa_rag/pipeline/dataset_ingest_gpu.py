@@ -51,6 +51,7 @@ from pdfqa_rag.pipeline.factory import (
     build_blob_store,
     build_extraction_client,
     build_multimodal_embedder,
+    build_segmenter,
 )
 from pdfqa_rag.store.factory import build_vector_store
 
@@ -259,9 +260,7 @@ async def _page_counts(paths: list[Path], *, concurrency: int = 16) -> dict[Path
     return dict(results)
 
 
-async def _load_or_compute_page_counts(
-    paths: list[Path], checkpoint_path: Path
-) -> dict[Path, int]:
+async def _load_or_compute_page_counts(paths: list[Path], checkpoint_path: Path) -> dict[Path, int]:
     """Cached to ``<checkpoint>.pagecounts.json`` (keyed by filename, not
     full path, so a rerun from a different working directory or dataset
     root still hits the cache) — a resumed run shouldn't re-read every
@@ -317,8 +316,7 @@ def _build_batches(
     for p in ordered:
         pages = page_counts.get(p, 1)
         if current and (
-            current_pages + pages > max_pages_per_batch
-            or len(current) >= max_files_per_batch
+            current_pages + pages > max_pages_per_batch or len(current) >= max_files_per_batch
         ):
             batches.append(current)
             current = []
@@ -424,6 +422,12 @@ async def ingest_dataset_gpu(
         blob_store = build_blob_store(cfg.storage)
         await blob_store.connect()
 
+    # Built once and shared by every pipeline: a model-based segmenter costs
+    # ~9s to load and its own copy of the weights, and there is one pipeline
+    # per extraction endpoint. SaTSegmenter guards its model with a lock, so
+    # sharing one across the stage-2 workers is safe.
+    segmenter = build_segmenter(cfg.chunking)
+
     pipelines = [
         DocumentIngestPipeline(
             build_extraction_client(
@@ -433,6 +437,9 @@ async def ingest_dataset_gpu(
             store,
             blob_store=blob_store,
             key_prefix=cfg.storage.key_prefix,
+            chunk_size=cfg.chunking.size,
+            chunk_overlap=cfg.chunking.overlap,
+            segmenter=segmenter,
         )
         for url in endpoints
     ]
@@ -586,9 +593,7 @@ async def ingest_dataset_gpu(
             )
 
     lag_task = asyncio.create_task(_monitor_event_loop_lag())
-    gpu_task = asyncio.create_task(
-        _monitor_gpu_utilization(ssh_host=gpu_monitor_ssh_host)
-    )
+    gpu_task = asyncio.create_task(_monitor_gpu_utilization(ssh_host=gpu_monitor_ssh_host))
     try:
         stage2_tasks = [
             asyncio.create_task(_stage2(pipelines[0], i)) for i in range(postprocess_workers)
@@ -673,25 +678,32 @@ def main() -> None:
         "--parallel setting.",
     )
     parser.add_argument(
-        "--timeout-base-s", type=float, default=60.0,
+        "--timeout-base-s",
+        type=float,
+        default=60.0,
         help="Fixed part of the per-batch extraction timeout formula "
         "(base + per_page * total_pages).",
     )
     parser.add_argument(
-        "--timeout-per-page-s", type=float, default=5.0,
+        "--timeout-per-page-s",
+        type=float,
+        default=5.0,
         help="Per-page part of the timeout formula. Not a measured "
         "constant -- watch the driver's 'timeout=Xs' log line against how "
         "long a batch actually took and raise this if batches are timing "
         "out near their budget.",
     )
     parser.add_argument(
-        "--timeout-floor-s", type=float, default=120.0,
+        "--timeout-floor-s",
+        type=float,
+        default=120.0,
         help="Minimum extraction timeout regardless of batch size.",
     )
     parser.add_argument(
-        "--timeout-ceiling-s", type=float, default=1800.0,
-        help="Maximum extraction timeout -- caps how long a hung replica "
-        "can stall one batch.",
+        "--timeout-ceiling-s",
+        type=float,
+        default=1800.0,
+        help="Maximum extraction timeout -- caps how long a hung replica can stall one batch.",
     )
     parser.add_argument(
         "--gpu-monitor-host",

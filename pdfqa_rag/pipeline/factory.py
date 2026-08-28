@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 from pdfqa_rag.config import (
     AppConfig,
     BlobStoreConfig,
+    ChunkingConfig,
     DocumentIntelligenceConfig,
     EmbedConfig,
     LLMConfig,
@@ -121,6 +122,21 @@ def build_blob_store(cfg: BlobStoreConfig) -> S3FileStore:
     )
 
 
+def build_segmenter(cfg: ChunkingConfig):
+    """Sentence segmenter for the chunker, or ``None`` for the built-in
+    regex default. ``"sat"`` needs agent-substrate's ``chunking`` extra and
+    downloads its model on first use, so it is constructed only when
+    actually selected — never eagerly."""
+    if cfg.segmenter == "regex":
+        return None
+    if cfg.segmenter == "sat":
+        from substrate.capabilities.knowledge.segmentation import SaTSegmenter
+
+        logger.info("Segmenter: SaT (%s)", cfg.sat_model)
+        return SaTSegmenter(cfg.sat_model)
+    raise ValueError(f"Unknown segmenter {cfg.segmenter!r}. Expected 'regex' or 'sat'.")
+
+
 def build_document_ingest_pipeline(
     cfg: AppConfig, store, blob_store: S3FileStore | None = None
 ) -> DocumentIngestPipeline:
@@ -141,4 +157,7 @@ def build_document_ingest_pipeline(
         store,
         blob_store=blob_store,
         key_prefix=cfg.storage.key_prefix,
+        chunk_size=cfg.chunking.size,
+        chunk_overlap=cfg.chunking.overlap,
+        segmenter=build_segmenter(cfg.chunking),
     )
