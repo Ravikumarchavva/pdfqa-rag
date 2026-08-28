@@ -113,17 +113,30 @@ async def ingest_dataset_gpu(
     checkpoint_path: Path,
     limit: int | None = None,
     annotated_stems: set[str] | None = None,
+    file_batch_size: int = 4,
 ) -> dict[str, int]:
     """Ingest every PDF under ``dataset_dir`` across ``len(endpoints)``
     document-intelligence-gpu instances in parallel (one worker per
     endpoint, pulling from a shared work queue), resumable via
     ``checkpoint_path``. Each worker's own pipeline still processes its
-    files one at a time internally (the per-instance serialization
-    finding still applies) — parallelism comes from N independent workers,
-    not from any one of them handling concurrent requests.
+    files one document-intelligence *request* at a time internally (the
+    per-instance serialization finding still applies) — parallelism comes
+    from N independent workers, not from any one of them handling
+    concurrent requests.
+
+    Each worker pulls ``file_batch_size`` files per request via
+    ``DocumentIngestPipeline.ingest_files`` (extract_batch under the hood)
+    instead of one file per request — a single document's pages often
+    don't carry enough text regions to fill a large OCR batch on their
+    own, so grouping several files into one document-intelligence call
+    gives it real cross-document batching headroom. Tradeoff, real and
+    worth knowing before raising this: predict() is still one blocking
+    call per request, so a bigger batch means a longer worst-case request
+    (all N files' combined page count against one timeout) — a batch
+    landing a few huge reports together needs a correspondingly larger
+    ``DOC_INTEL_TIMEOUT_S``, not just a bigger batch size.
     """
-    from substrate.capabilities.knowledge import DocumentIngestPipeline, ExtractionFailedError
-    from substrate.runtimes.embedding_reranker.service.embedding import EmbeddingServiceError
+    from substrate.capabilities.knowledge import DocumentIngestPipeline
 
     cfg = AppConfig()
     store = build_vector_store(cfg.store, dimensions=_EMBEDDING_DIMENSIONS)
@@ -172,30 +185,36 @@ async def ingest_dataset_gpu(
 
     async def _worker(pipeline: DocumentIngestPipeline, worker_id: int) -> None:
         while True:
-            try:
-                path = queue.get_nowait()
-            except asyncio.QueueEmpty:
+            batch: list[Path] = []
+            for _ in range(file_batch_size):
+                try:
+                    batch.append(queue.get_nowait())
+                except asyncio.QueueEmpty:
+                    break
+            if not batch:
                 return
-            try:
-                n_text, n_img = await pipeline.ingest_file(path, collection=collection)
-            except (OSError, ExtractionFailedError, EmbeddingServiceError) as exc:
-                stats["failed"] += 1
-                await checkpoint.record(path.stem, status="failed", error=str(exc))
-                logger.warning("[worker %d] Failed %s: %s", worker_id, path.name, exc)
-            else:
-                stats["files"] += 1
-                stats["text_docs"] += n_text
-                stats["image_docs"] += n_img
-                await checkpoint.record(
-                    path.stem, status="ok", text_docs=n_text, image_docs=n_img
-                )
-                logger.info(
-                    "[worker %d] Ingested %s: %d text, %d image docs",
-                    worker_id,
-                    path.name,
-                    n_text,
-                    n_img,
-                )
+
+            results = await pipeline.ingest_files(batch, collection=collection)
+            for path, result in zip(batch, results):
+                if isinstance(result, Exception):
+                    stats["failed"] += 1
+                    await checkpoint.record(path.stem, status="failed", error=str(result))
+                    logger.warning("[worker %d] Failed %s: %s", worker_id, path.name, result)
+                else:
+                    n_text, n_img = result
+                    stats["files"] += 1
+                    stats["text_docs"] += n_text
+                    stats["image_docs"] += n_img
+                    await checkpoint.record(
+                        path.stem, status="ok", text_docs=n_text, image_docs=n_img
+                    )
+                    logger.info(
+                        "[worker %d] Ingested %s: %d text, %d image docs",
+                        worker_id,
+                        path.name,
+                        n_text,
+                        n_img,
+                    )
 
     await asyncio.gather(*(_worker(p, i) for i, p in enumerate(pipelines)))
     await embedder.aclose()
@@ -239,6 +258,17 @@ def main() -> None:
         help="Checkpoint JSONL path (default: <collection>.checkpoint.jsonl)",
     )
     parser.add_argument(
+        "--file-batch-size",
+        type=int,
+        default=4,
+        help=(
+            "Files per document-intelligence extract_batch() call. Bigger "
+            "means more real cross-document OCR-batching headroom, but also "
+            "a longer worst-case request (all N files' pages, one blocking "
+            "predict() call) -- raise DOC_INTEL_TIMEOUT_S alongside this."
+        ),
+    )
+    parser.add_argument(
         "--include-unannotated",
         action="store_true",
         help=(
@@ -278,6 +308,7 @@ def main() -> None:
             checkpoint_path=checkpoint_path,
             limit=args.limit,
             annotated_stems=annotated_stems,
+            file_batch_size=args.file_batch_size,
         )
     )
     logger.info("Done: %s", stats)
