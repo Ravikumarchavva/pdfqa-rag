@@ -88,6 +88,19 @@ class Checkpoint:
             self.done.add(file_name)
 
 
+def _annotated_stems(annotations_dir: Path) -> set[str]:
+    """Only the files with real ground truth are worth ingesting for this
+    eval — ``dataset_dir`` (data/pdfQA-Benchmark) holds ~4300 PDFs total,
+    but only ~514 have a matching annotation JSON (QAPair.file_name is the
+    join key, == the PDF stem). Ingesting the rest would burn hours of GPU
+    time on files nothing can ever be scored against.
+    """
+    from pdfqa_rag.data.loader import load_annotations
+
+    result = load_annotations(annotations_dir)
+    return {qa.file_name for qa in result.qa_pairs}
+
+
 async def ingest_dataset_gpu(
     dataset_dir: Path,
     *,
@@ -95,6 +108,7 @@ async def ingest_dataset_gpu(
     endpoints: list[str],
     checkpoint_path: Path,
     limit: int | None = None,
+    annotated_stems: set[str] | None = None,
 ) -> dict[str, int]:
     """Ingest every PDF under ``dataset_dir`` across ``len(endpoints)``
     document-intelligence-gpu instances in parallel (one worker per
@@ -126,6 +140,12 @@ async def ingest_dataset_gpu(
 
     checkpoint = Checkpoint(checkpoint_path)
     pdfs = sorted(dataset_dir.glob("**/*.pdf"))
+    if annotated_stems is not None:
+        before = len(pdfs)
+        pdfs = [p for p in pdfs if p.stem in annotated_stems]
+        logger.info(
+            "Filtered to annotated files only: %d/%d", len(pdfs), before
+        )
     if limit is not None:
         pdfs = pdfs[:limit]
     pending = [p for p in pdfs if p.stem not in checkpoint.done]
@@ -210,6 +230,16 @@ def main() -> None:
         default=None,
         help="Checkpoint JSONL path (default: <collection>.checkpoint.jsonl)",
     )
+    parser.add_argument(
+        "--include-unannotated",
+        action="store_true",
+        help=(
+            "Ingest every PDF under the dataset dir, not just the ~514 with "
+            "a matching ground-truth annotation. Off by default -- this "
+            "driver exists for the evaluation, and the other ~3800 files "
+            "can never be scored against anything."
+        ),
+    )
     args = parser.parse_args()
 
     cfg = AppConfig()
@@ -222,6 +252,12 @@ def main() -> None:
     checkpoint_path = Path(args.checkpoint or f"{args.collection}.checkpoint.jsonl")
     endpoints = _default_endpoints(cfg)
 
+    annotated_stems = None
+    if not args.include_unannotated:
+        annotations_dir = Path(str(settings.ROOT_DIR)) / "data/pdfQA-Annotations"
+        annotated_stems = _annotated_stems(annotations_dir)
+        logger.info("Loaded %d annotated file stems", len(annotated_stems))
+
     logger.info("Dataset dir: %s", dataset_dir)
     logger.info("Endpoints: %s", endpoints)
     logger.info("Collection: %s", args.collection)
@@ -233,6 +269,7 @@ def main() -> None:
             endpoints=endpoints,
             checkpoint_path=checkpoint_path,
             limit=args.limit,
+            annotated_stems=annotated_stems,
         )
     )
     logger.info("Done: %s", stats)
