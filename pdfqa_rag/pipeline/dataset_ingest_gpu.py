@@ -326,7 +326,17 @@ def _extraction_timeout_s(
     ExtractionClient (which has no idea what a page is). ``floor_s`` keeps
     a tiny batch from getting an unreasonably short timeout; ``ceiling_s``
     keeps a huge one from turning a genuinely hung replica into an
-    unbounded stall — 1800s (30min) is the recommended ceiling."""
+    unbounded stall — 1800s (30min) is the recommended ceiling.
+
+    Default ``per_page_s=5.0`` is a deliberately generous starting point,
+    not a measured constant: a real 88-page batch of dense corporate ESG
+    reports (charts/tables, not plain text) needed more than the
+    previously-tried 2.0s/page budget and timed out at ~208s. Real
+    per-page cost varies a lot with image/table density, so this is
+    exposed as a CLI flag -- watch the driver's "timeout=Xs" log line
+    against how long a batch actually took and tune from there rather
+    than trusting this number blindly.
+    """
     return max(floor_s, min(ceiling_s, base_s + per_page_s * total_pages))
 
 
@@ -349,9 +359,9 @@ async def ingest_dataset_gpu(
     max_files_per_batch: int = 6,
     postprocess_workers: int = 8,
     extracted_queue_maxsize: int = 8,
-    timeout_base_s: float = 30.0,
-    timeout_per_page_s: float = 2.0,
-    timeout_floor_s: float = 60.0,
+    timeout_base_s: float = 60.0,
+    timeout_per_page_s: float = 5.0,
+    timeout_floor_s: float = 120.0,
     timeout_ceiling_s: float = 1800.0,
     use_blob_store: bool = True,
 ) -> dict[str, int]:
@@ -648,6 +658,27 @@ def main() -> None:
         "--parallel setting.",
     )
     parser.add_argument(
+        "--timeout-base-s", type=float, default=60.0,
+        help="Fixed part of the per-batch extraction timeout formula "
+        "(base + per_page * total_pages).",
+    )
+    parser.add_argument(
+        "--timeout-per-page-s", type=float, default=5.0,
+        help="Per-page part of the timeout formula. Not a measured "
+        "constant -- watch the driver's 'timeout=Xs' log line against how "
+        "long a batch actually took and raise this if batches are timing "
+        "out near their budget.",
+    )
+    parser.add_argument(
+        "--timeout-floor-s", type=float, default=120.0,
+        help="Minimum extraction timeout regardless of batch size.",
+    )
+    parser.add_argument(
+        "--timeout-ceiling-s", type=float, default=1800.0,
+        help="Maximum extraction timeout -- caps how long a hung replica "
+        "can stall one batch.",
+    )
+    parser.add_argument(
         "--no-blob-store",
         action="store_true",
         help="Inline extracted images as base64 instead of uploading them -- "
@@ -696,6 +727,10 @@ def main() -> None:
             max_pages_per_batch=args.max_pages_per_batch,
             max_files_per_batch=args.max_files_per_batch,
             postprocess_workers=args.postprocess_workers,
+            timeout_base_s=args.timeout_base_s,
+            timeout_per_page_s=args.timeout_per_page_s,
+            timeout_floor_s=args.timeout_floor_s,
+            timeout_ceiling_s=args.timeout_ceiling_s,
             use_blob_store=not args.no_blob_store,
         )
     )
