@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING
 
 from pdfqa_rag.config import (
     AppConfig,
+    BlobStoreConfig,
     DocumentIntelligenceConfig,
     EmbedConfig,
     LLMConfig,
@@ -32,6 +33,7 @@ from pdfqa_rag.store.factory import build_vector_store
 if TYPE_CHECKING:
     from substrate.capabilities.knowledge import DocumentIngestPipeline
     from substrate.capabilities.knowledge.pipeline import RAGPipeline
+    from substrate.capabilities.storage.s3 import S3FileStore
     from substrate.kernel.llm import EmbeddingClient, LLMClient
     from substrate.runtimes.document_intelligence.client import ExtractionClient
     from substrate.runtimes.embedding_reranker.service.embedding import EmbeddingReranker
@@ -103,15 +105,33 @@ def build_multimodal_embedder(cfg: MultimodalEmbedConfig) -> EmbeddingReranker:
     )
 
 
-def build_document_ingest_pipeline(cfg: AppConfig, store) -> DocumentIngestPipeline:
-    """Wire extraction client + multimodal embedder + store into a ready-to-use
-    ``DocumentIngestPipeline`` (see substrate.capabilities.knowledge) — pass
-    in the store yourself (e.g. from ``build_vector_store``) since its
-    dimensions depend on the embedding model, which this function has no
-    opinion about.
+def build_blob_store(cfg: BlobStoreConfig) -> S3FileStore:
+    """Build the SeaweedFS-backed blob store for source PDFs + extracted
+    images. Uses agent-substrate's own S3FileStore (wraps MinIOConnector,
+    speaks the S3 API — compatible with SeaweedFS's S3 gateway)."""
+    from substrate.capabilities.storage.s3 import S3FileStore
+
+    logger.debug("BlobStore: endpoint=%s bucket=%s", cfg.endpoint_url, cfg.bucket)
+    return S3FileStore(
+        endpoint_url=cfg.endpoint_url,
+        access_key=cfg.access_key,
+        secret_key=cfg.secret_key,
+        bucket=cfg.bucket,
+        region=cfg.region,
+    )
+
+
+def build_document_ingest_pipeline(
+    cfg: AppConfig, store, blob_store: S3FileStore
+) -> DocumentIngestPipeline:
+    """Wire extraction client + multimodal embedder + store + blob store into
+    a ready-to-use ``DocumentIngestPipeline`` (see
+    substrate.capabilities.knowledge) — pass in the store yourself (e.g.
+    from ``build_vector_store``) since its dimensions depend on the
+    embedding model, which this function has no opinion about.
     """
     from substrate.capabilities.knowledge import DocumentIngestPipeline
 
     extraction = build_extraction_client(cfg.doc_intel)
     embedder = build_multimodal_embedder(cfg.mm_embed)
-    return DocumentIngestPipeline(extraction, embedder, store)
+    return DocumentIngestPipeline(extraction, embedder, store, blob_store)

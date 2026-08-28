@@ -33,7 +33,11 @@ import logging
 from pathlib import Path
 
 from pdfqa_rag.config import AppConfig, DocumentIntelligenceConfig, settings
-from pdfqa_rag.pipeline.factory import build_extraction_client, build_multimodal_embedder
+from pdfqa_rag.pipeline.factory import (
+    build_blob_store,
+    build_extraction_client,
+    build_multimodal_embedder,
+)
 from pdfqa_rag.store.factory import build_vector_store
 
 logger = logging.getLogger(__name__)
@@ -126,6 +130,8 @@ async def ingest_dataset_gpu(
     if hasattr(store, "ensure_table"):
         await store.ensure_table()
     embedder = build_multimodal_embedder(cfg.mm_embed)
+    blob_store = build_blob_store(cfg.storage)
+    await blob_store.connect()
 
     pipelines = [
         DocumentIngestPipeline(
@@ -134,6 +140,7 @@ async def ingest_dataset_gpu(
             ),
             embedder,
             store,
+            blob_store,
         )
         for url in endpoints
     ]
@@ -192,6 +199,7 @@ async def ingest_dataset_gpu(
 
     await asyncio.gather(*(_worker(p, i) for i, p in enumerate(pipelines)))
     await embedder.aclose()
+    await blob_store.disconnect()
     return stats
 
 
