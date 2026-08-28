@@ -11,7 +11,31 @@ from pdfqa_rag.pipeline.dataset_ingest_gpu import (
     Checkpoint,
     _build_batches,
     _extraction_timeout_s,
+    _nvidia_smi_cmd,
 )
+
+# ── _nvidia_smi_cmd (real bug: local nvidia-smi silently monitors the ───────
+# wrong machine when the driver doesn't run on the GPU host) ────────────────
+
+
+def test_nvidia_smi_cmd_local_by_default():
+    assert _nvidia_smi_cmd(None) == [
+        "nvidia-smi",
+        "--query-gpu=index,utilization.gpu",
+        "--format=csv,noheader,nounits",
+    ]
+
+
+def test_nvidia_smi_cmd_wraps_in_ssh_when_host_given():
+    """This is the fix for a real bug: a bare local nvidia-smi call on a
+    laptop with its own (unrelated) GPU silently reported that GPU's 0%
+    utilization instead of the remote host's real GPUs actually doing the
+    work, with no error to signal the mismatch."""
+    cmd = _nvidia_smi_cmd("epyc")
+    assert cmd[:2] == ["ssh", "epyc"]
+    assert "nvidia-smi" in cmd[2]
+    assert "--query-gpu=index,utilization.gpu" in cmd[2]
+
 
 # ── _build_batches (LPT scheduling) ──────────────────────────────────────
 

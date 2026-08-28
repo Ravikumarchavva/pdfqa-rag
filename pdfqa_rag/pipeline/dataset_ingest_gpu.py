@@ -170,27 +170,43 @@ async def _monitor_event_loop_lag(interval_s: float = 0.25, report_every_s: floa
         pass
 
 
-async def _monitor_gpu_utilization(interval_s: float = 5.0):
+def _nvidia_smi_cmd(ssh_host: str | None) -> list[str]:
+    """The nvidia-smi invocation to run -- local, or over ssh to a remote
+    GPU host. Real, found-not-assumed reason this parameter exists at all:
+    this driver typically runs on a machine (a laptop) that is NOT where
+    the document-intelligence-gpu replicas actually are (they're reached
+    over HTTP, e.g. on "epyc") -- a bare local ``nvidia-smi`` call silently
+    reports the *driver's own* (possibly unrelated, possibly absent) GPU
+    instead of the ones doing the real work, with no error to signal the
+    mismatch. Verified: on a laptop with its own small GPU, this produced
+    a plausible-looking but meaningless "mean utilization" number."""
+    query = ["nvidia-smi", "--query-gpu=index,utilization.gpu", "--format=csv,noheader,nounits"]
+    if ssh_host:
+        return ["ssh", ssh_host, " ".join(query)]
+    return query
+
+
+async def _monitor_gpu_utilization(interval_s: float = 5.0, *, ssh_host: str | None = None):
     """Background task: logs mean per-GPU utilization every ``interval_s``.
 
-    Best-effort — silently stops (logs once) if ``nvidia-smi`` isn't
-    available, e.g. the driver isn't running on the GPU host itself. Mean
-    utilization across the run is the headline number for whether the
-    staged design actually kept the replicas busy (target: >80%).
+    Best-effort — silently stops (logs once) if ``nvidia-smi`` (local or,
+    when ``ssh_host`` is set, over ssh) isn't reachable. Mean utilization
+    across the run is the headline number for whether the staged design
+    actually kept the replicas busy (target: >80%). Pass ``ssh_host`` (e.g.
+    ``"epyc"``, matching an entry in ``~/.ssh/config``) when the GPUs this
+    run actually uses are not on the machine running this driver.
     """
+    cmd = _nvidia_smi_cmd(ssh_host)
     try:
         proc = await asyncio.create_subprocess_exec(
-            "nvidia-smi",
-            "--query-gpu=index,utilization.gpu",
-            "--format=csv,noheader,nounits",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.DEVNULL,
+            *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
         )
         await proc.communicate()
         if proc.returncode != 0:
             raise RuntimeError("nvidia-smi not usable")
     except (FileNotFoundError, RuntimeError):
-        logger.info("GPU utilization monitor disabled (nvidia-smi not available here)")
+        where = f"on {ssh_host!r}" if ssh_host else "here"
+        logger.info("GPU utilization monitor disabled (nvidia-smi not available %s)", where)
         return
 
     samples: dict[str, list[int]] = {}
@@ -199,11 +215,7 @@ async def _monitor_gpu_utilization(interval_s: float = 5.0):
             await asyncio.sleep(interval_s)
             try:
                 proc = await asyncio.create_subprocess_exec(
-                    "nvidia-smi",
-                    "--query-gpu=index,utilization.gpu",
-                    "--format=csv,noheader,nounits",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.DEVNULL,
+                    *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
                 )
                 stdout, _ = await proc.communicate()
                 for line in stdout.decode().strip().splitlines():
@@ -364,6 +376,7 @@ async def ingest_dataset_gpu(
     timeout_floor_s: float = 120.0,
     timeout_ceiling_s: float = 1800.0,
     use_blob_store: bool = True,
+    gpu_monitor_ssh_host: str | None = None,
 ) -> dict[str, int]:
     """Two-stage producer/consumer ingestion across ``len(endpoints)``
     document-intelligence-gpu instances.
@@ -573,7 +586,9 @@ async def ingest_dataset_gpu(
             )
 
     lag_task = asyncio.create_task(_monitor_event_loop_lag())
-    gpu_task = asyncio.create_task(_monitor_gpu_utilization())
+    gpu_task = asyncio.create_task(
+        _monitor_gpu_utilization(ssh_host=gpu_monitor_ssh_host)
+    )
     try:
         stage2_tasks = [
             asyncio.create_task(_stage2(pipelines[0], i)) for i in range(postprocess_workers)
@@ -679,6 +694,15 @@ def main() -> None:
         "can stall one batch.",
     )
     parser.add_argument(
+        "--gpu-monitor-host",
+        default=None,
+        help="SSH host (e.g. an entry in ~/.ssh/config, 'epyc') to run "
+        "nvidia-smi on for the mean-utilization telemetry, when the GPUs "
+        "this run actually uses aren't on the machine running this driver. "
+        "A bare local nvidia-smi call would otherwise silently report the "
+        "driver machine's own (possibly unrelated) GPU instead.",
+    )
+    parser.add_argument(
         "--no-blob-store",
         action="store_true",
         help="Inline extracted images as base64 instead of uploading them -- "
@@ -731,6 +755,7 @@ def main() -> None:
             timeout_per_page_s=args.timeout_per_page_s,
             timeout_floor_s=args.timeout_floor_s,
             timeout_ceiling_s=args.timeout_ceiling_s,
+            gpu_monitor_ssh_host=args.gpu_monitor_host,
             use_blob_store=not args.no_blob_store,
         )
     )
