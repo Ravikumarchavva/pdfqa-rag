@@ -57,10 +57,6 @@ from pdfqa_rag.store.factory import build_vector_store
 
 logger = logging.getLogger(__name__)
 
-# Qwen3-VL-Embedding-2B — must match the dimensions the embed sidecar
-# actually produces (verified this session: 2048-dim vectors).
-_EMBEDDING_DIMENSIONS = 2048
-
 
 class Checkpoint:
     """Append-only JSONL checkpoint keyed by PDF stem (== QAPair.file_name,
@@ -413,7 +409,7 @@ async def ingest_dataset_gpu(
     from substrate.capabilities.knowledge.document_ingest_pipeline import ExtractedFile
 
     cfg = AppConfig()
-    store = build_vector_store(cfg.store, dimensions=_EMBEDDING_DIMENSIONS)
+    store = build_vector_store(cfg.store, dimensions=cfg.mm_embed.dimensions)
     if hasattr(store, "ensure_table"):
         await store.ensure_table()
     embedder = build_multimodal_embedder(cfg.mm_embed)

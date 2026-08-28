@@ -72,12 +72,44 @@ def build_llm_client(cfg: LLMConfig) -> LLMClient:
     )
 
 
+class _MultimodalEmbeddingAdapter:
+    """Gives ``EmbeddingReranker`` the ``EmbeddingClient`` shape RAGPipeline
+    expects (``embed`` / ``embed_single``) on top of the ``embed_texts`` /
+    ``embed_text`` methods it actually has. Purely a name/return-shape
+    translation -- exactly this module's stated job.
+    """
+
+    def __init__(self, embedder: EmbeddingReranker) -> None:
+        self._embedder = embedder
+
+    async def embed(self, texts: list[str]):
+        from substrate.kernel.llm import EmbeddingResult
+
+        vecs = await self._embedder.embed_texts(texts)
+        return EmbeddingResult(embeddings=vecs, model="qwen3-vl-embedding")
+
+    async def embed_single(self, text: str) -> list[float]:
+        return await self._embedder.embed_text(text)
+
+
 async def build_pipeline(cfg: AppConfig) -> RAGPipeline:
-    """Wire embed client + vector store into a ready-to-use RAGPipeline."""
+    """Wire embed client + vector store into a ready-to-use RAGPipeline.
+
+    Uses the SAME embedder the multimodal ingestion path writes with, not
+    the generic text-only one. Real, found-not-assumed: they disagree on
+    dimensionality -- DocumentIngestPipeline stores 2048-dim halfvec
+    vectors from the llama-embed sidecar, while ``cfg.embed`` defaults to
+    384-dim all-MiniLM-L6-v2. Building the store at 384 against a table
+    that is really 2048 failed outright with `operator class
+    "vector_cosine_ops" does not accept data type halfvec`, so evaluating
+    an ingested collection was impossible. A query vector must come from
+    the same model as the stored vectors for the distances to mean
+    anything at all, so this is a correctness fix, not just a config one.
+    """
     from substrate.capabilities.knowledge.pipeline import RAGPipeline
 
-    embed = build_embed_client(cfg.embed)
-    store = build_vector_store(cfg.store, cfg.embed.dimensions)
+    embed = _MultimodalEmbeddingAdapter(build_multimodal_embedder(cfg.mm_embed))
+    store = build_vector_store(cfg.store, cfg.mm_embed.dimensions)
     await store.ensure_table()
     return RAGPipeline(embedding_client=embed, vector_store=store)
 

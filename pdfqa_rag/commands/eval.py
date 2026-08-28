@@ -129,7 +129,7 @@ async def _eval(
                 collection=collection,
                 limit=k,
             )
-            retrieved_texts = [r.text for r in retrieved]
+            retrieved_texts = [r.to_text() for r in retrieved]
             hit, rank = score_result(qa.source_texts, retrieved_texts, match_fn=match_fn)
             eval_results.append(
                 EvalResult(

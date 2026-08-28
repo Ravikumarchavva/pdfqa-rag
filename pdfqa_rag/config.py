@@ -194,6 +194,12 @@ class MultimodalEmbedConfig(BaseSettings):
 
     embed_server_url: str = "http://localhost:8031"
     rerank_server_url: str = "http://localhost:8032"
+
+    dimensions: int = 2048
+    """Qwen3-VL-Embedding-2B's real output width (verified against the live
+    sidecar). Distinct from EmbedConfig.dimensions, which describes the
+    text-only client -- mixing them up builds the vector store at the wrong
+    width and every query against an ingested collection fails."""
     timeout_s: float = 120.0
     """Per-request httpx timeout. EmbeddingReranker's own default (30s) is
     tuned for same-host calls; a remote GPU host (e.g. epyc over LAN) needs
