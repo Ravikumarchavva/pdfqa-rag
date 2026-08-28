@@ -117,6 +117,11 @@ class DocumentIntelligenceConfig(BaseSettings):
 
     service_url: str = "http://localhost:8021"
     timeout_s: float = 90.0
+    num_replicas: int = 3
+    """Endpoints derived by dataset_ingest_gpu._default_endpoints() (ports
+    incrementing from service_url's port). Real corporate PDFs run 30-180+
+    pages; 90s is too short for those — raise DOC_INTEL_TIMEOUT_S for a
+    full run. Set to 6 to match a doubled-up (2-per-GPU) deployment."""
 
 
 class MultimodalEmbedConfig(BaseSettings):

@@ -176,17 +176,17 @@ async def ingest_dataset_gpu(
 
 
 def _default_endpoints(cfg: AppConfig) -> list[str]:
-    """Derive 3 document-intelligence-gpu endpoints from the configured
-    base doc_intel service_url by incrementing its port — matches the
-    8021/8022/8023 convention document-intelligence-gpu-0/1/2 use in
-    docker-compose.yml.
+    """Derive cfg.doc_intel.num_replicas document-intelligence-gpu endpoints
+    from the configured base doc_intel service_url by incrementing its
+    port — matches the 8021/8022/8023(/8024/8025/8026) convention
+    document-intelligence-gpu-0..5 use in docker-compose.yml.
     """
     from urllib.parse import urlsplit, urlunsplit
 
     parts = urlsplit(cfg.doc_intel.service_url)
     base_port = parts.port or 8021
     urls = []
-    for i in range(3):
+    for i in range(cfg.doc_intel.num_replicas):
         netloc = f"{parts.hostname}:{base_port + i}"
         urls.append(urlunsplit((parts.scheme, netloc, parts.path, "", "")))
     return urls
