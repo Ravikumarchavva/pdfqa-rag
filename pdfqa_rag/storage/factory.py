@@ -2,7 +2,7 @@
 
 Delegates entirely to ``substrate.capabilities.storage.s3.S3FileStore``
 (aiobotocore-based), which speaks the plain S3 API — so SeaweedFS locally
-and AWS S3 / MinIO in production are interchangeable via config alone.
+and AWS S3 (or any S3-compatible service) in production are interchangeable via config alone.
 """
 
 from __future__ import annotations

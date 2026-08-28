@@ -19,7 +19,7 @@ services:
 
   # S3-compatible object store for raw source documents (PDFs/text).
   # agent-substrate's S3FileStore talks to any S3 API, so no code
-  # changes are needed to swap this for AWS S3 / MinIO in production.
+  # changes are needed to swap this for AWS S3 (or any S3-compatible service) in production.
   seaweedfs:
     image: chrislusf/seaweedfs
     command: server -s3 -s3.port=8333 -dir=/data -master.volumeSizeLimitMB=1024
