@@ -1,8 +1,8 @@
-# Large datasets — accidentally tracked as gitlinks (nested repos, not real
-# submodules — no .gitmodules ever existed for these), never committed as
-# actual blob content, but still shouldn't be tracked at all.
-/data/pdfQA-Benchmark/
-/data/pdfQA-Annotations/
+# PDF benchmark/document data — not tracked at all, not even the small
+# sample PDFs used in dev notebooks. Covers pdfQA-Benchmark/pdfQA-Annotations
+# too (those were previously ignored individually as accidental gitlinks —
+# nested repos, no .gitmodules ever existed for them).
+/data/
 lancedb/
 
 # Byte-compiled / optimized / DLL files
