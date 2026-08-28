@@ -9,7 +9,11 @@ dependencies = [
     "tqdm>=4.66",
     "python-dotenv>=1.0",
     "sentence-transformers>=5.5.1",
-    "agent-substrate[s3,rag]",
+    # `chunking` supplies wtpsplit for CHUNK_SEGMENTER=sat — the model-based
+    # sentence segmenter. Not optional here the way it is upstream: this
+    # project's whole point is comparing retrieval arms, and the SaT arm is
+    # one of them.
+    "agent-substrate[s3,rag,chunking]",
     "ipykernel>=7.3.0",
     # For running ExtractionPipeline directly in this venv (testing doc
     # extraction without the standalone HTTP service on :8021). GPU-only
